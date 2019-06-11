@@ -1,0 +1,118 @@
+<style lang="less">
+.van-col {
+  color: #fff;
+  background-color: #5dbcb8;
+  border: #edebec 1px solid;
+  padding: 15vw 0;
+  text-align: center;
+  font-size: 18px;
+  position: relative;
+  overflow: hidden;
+  
+  .van-icon{
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      opacity: 0.1;
+  }
+}
+
+@setcolor: {
+  1: #3f87f5;
+  2: #6c48b4;
+  3: #973fb0;
+  4: #d2549d;
+  5: #a37554;
+  6: #d56358;
+  7: #e48943;
+  8: #799b3f;
+  9: #3b9d99;
+  10: #248c1b;
+};
+
+each(@setcolor, {
+  .c@{index} {
+      .van-col {
+        background: -webkit-linear-gradient(@value, @value/0.8);
+        background: linear-gradient(@value, @value/0.8);
+        &:active{
+            background: -webkit-linear-gradient(@value/0.8, @value);
+        }
+      }
+  }
+});
+
+</style>
+
+<template>
+    <view>
+        <van-row>
+            <van-col span="24">用户头像</van-col>
+        </van-row>
+        <van-row>
+            <van-col span="12" class="c c1">
+                <van-icon name="add-o" size="250px"/>我要开单
+            </van-col>
+            <van-col span="12" class="c c2">
+                <van-icon name="todo-list-o" size="250px"/>销售记录
+            </van-col>
+        </van-row>
+        <van-row>
+            <van-col span="12" class="c c3">
+                <van-icon name="records" size="250px"/>马上开单
+            </van-col>
+            <van-col span="12" class="c c4">
+                <van-icon name="notes-o" size="250px"/>销售记录
+            </van-col>
+        </van-row>
+        <van-row>
+            <van-col span="8" class="c c5">
+                <van-icon name="brush-o" size="250px"/>我的销售
+            </van-col>
+            <van-col span="8" class="c c6">
+                <van-icon name="balance-o" size="250px"/>我的支出
+            </van-col>
+            <van-col span="8" class="c c7">
+                <van-icon name="label-o" size="250px"/>结算记录
+            </van-col>
+        </van-row>
+        <van-row>
+            <van-col span="12" class="c c8">
+                <van-icon name="chat-o" size="250px"/>绑定微信
+            </van-col>
+            <van-col span="12" class="c c9">
+                <van-icon name="medel-o" size="250px"/>修改密码
+            </van-col>
+        </van-row>
+        <van-button type="danger" size="large">切换登录</van-button>
+    </view>
+</template>
+
+<script>
+import wepy from 'wepy';
+
+export default class Index extends wepy.page {
+  config = {
+    navigationBarTitleText: '用户中心',
+    usingComponents: {
+      'van-field': '../../components/vant/field/index',
+      'van-button': '../../components/vant/button/index',
+      'van-row': '../../components/vant/row/index',
+      'van-col': '../../components/vant/col/index',
+      'van-icon': '../../components/vant/icon/index'
+    }
+  };
+
+  components = {};
+
+  data = {};
+
+  computed = {};
+
+  methods = {};
+
+  events = {};
+
+  onLoad() {}
+}
+</script>
