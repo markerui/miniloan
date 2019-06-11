@@ -1,0 +1,81 @@
+<style lang="less">
+</style>
+
+<template>
+    <view>
+        <van-cell-group>
+            <van-cell title="部门" value="即墨销售部"/>
+            <van-cell title="客户" value="刘健  即墨商超" is-link/>
+            <van-cell title="商品" is-link/>
+        </van-cell-group>
+        <van-panel title="商品总额" status="￥880">
+            <van-card title="商品标题">
+                <view slot="bottom">
+                    <text class="price">2.00</text>
+                    <text>x2（件）</text>
+                </view>
+                <view slot="footer">
+                    <van-button size="mini">按钮</van-button>
+                    <van-button size="mini">按钮</van-button>
+                </view>
+            </van-card>
+            <van-card title="商品标题">
+                <view slot="bottom">
+                    <text class="price">2.00</text>
+                    <text>x2（件）</text>
+                </view>
+                <view slot="footer">
+                    <van-button size="mini">按钮</van-button>
+                    <van-button size="mini">按钮</van-button>
+                </view>
+            </van-card>
+        </van-panel>
+        
+        <van-cell-group>
+            <van-field
+                value="{{ message }}"
+                type="textarea"
+                placeholder="备注信息"
+                autosize
+                border="{{ false }}"
+            />
+        </van-cell-group>
+
+        <van-submit-bar
+            price="{{ 3050 }}"
+            button-text="提交"
+            bind:submit="onSubmit"
+            />
+    </view>
+</template>
+
+<script>
+import wepy from 'wepy';
+
+export default class Index extends wepy.page {
+  config = {
+    navigationBarTitleText: '开单',
+    usingComponents: {
+      'van-field': '../../components/vant/field/index',
+      'van-button': '../../components/vant/button/index',
+      'van-cell': '../../components/vant/cell/index',
+      'van-cell-group': '../../components/vant/cell-group/index',
+      'van-card': '../../components/vant/card/index',
+      'van-panel': '../../components/vant/panel/index',
+      "van-submit-bar": "../../components/vant/submit-bar/index"
+    }
+  };
+
+  components = {};
+
+  data = {};
+
+  computed = {};
+
+  methods = {};
+
+  events = {};
+
+  onLoad() {}
+}
+</script>
