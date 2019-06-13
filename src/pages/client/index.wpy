@@ -1,0 +1,42 @@
+<style lang="less">
+</style>
+
+<template>
+  <view>
+    <van-search placeholder="请输入客户名称/电话"/>
+    <view style="padding-top:10px;">
+      <van-cell-group>
+        <van-cell title="刘健" value="即墨商超" size="large" label="136****2586"/>
+        <van-cell title="刘健" value="即墨商超" size="large" label="136****2586"/>
+        <van-cell title="刘健" value="即墨商超" size="large" label="136****2586"/>
+      </van-cell-group>
+    </view>
+  </view>
+</template>
+
+<script>
+import wepy from 'wepy';
+
+export default class ClientIndex extends wepy.page {
+  config = {
+    navigationBarTitleText: '选择客户',
+    usingComponents: {
+      'van-search': '../../components/vant/search/index',
+      'van-cell': '../../components/vant/cell/index',
+      'van-cell-group': '../../components/vant/cell-group/index'
+    }
+  };
+
+  components = {};
+
+  data = {};
+
+  computed = {};
+
+  methods = {};
+
+  events = {};
+
+  onLoad() {}
+}
+</script>

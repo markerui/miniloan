@@ -1,0 +1,29 @@
+<style lang="less">
+</style>
+
+<template>
+    <view></view>
+</template>
+
+<script>
+import wepy from 'wepy';
+
+export default class Settle extends wepy.page {
+  config = {
+    navigationBarTitleText: '结算记录',
+    usingComponents: {}
+  };
+
+  components = {};
+
+  data = {};
+
+  computed = {};
+
+  methods = {};
+
+  events = {};
+
+  onLoad() {}
+}
+</script>

@@ -2,6 +2,12 @@
 page {
   background-color: #edebec;
 }
+.van-block__title {
+  display: block;
+  font-size: 14px;
+  color: rgba(69, 90, 100, 0.6);
+  padding: 20px 15px 10px;
+}
 </style>
 
 <script>
@@ -10,7 +16,17 @@ import 'wepy-async-function';
 
 export default class extends wepy.app {
   config = {
-    pages: ['pages/order/index', 'pages/index/index', 'pages/login'],
+    pages: [
+      'pages/record/sale',
+      'pages/record/settle',
+      'pages/record/details',
+      'pages/eidtdpassword',
+      'pages/login',
+      'pages/goods/index',
+      'pages/client/index',
+      'pages/order/index',
+      'pages/index/index'
+    ],
     window: {
       backgroundTextStyle: 'light',
       navigationBarBackgroundColor: '#f44',

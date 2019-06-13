@@ -1,36 +1,92 @@
 <style lang="less">
+.goods_list{
+    .van-cell__title{
+        font-weight: bold;
+    }
+    .van-cell__value{
+        color: #f44;
+    }
+
+    .van-card{
+        position: relative;
+        padding: 0;
+        background-color: transparent;
+
+        .van-card__title{
+            font-size: 14px;
+            font-weight: normal;
+            padding-bottom: 10px;
+        }
+
+        .desc{
+            color: #f44;
+            text{
+                padding-right: 10px;
+                font-size: 12px;
+                &:first-child{
+                    font-size: 14px;
+                }
+                &:last-child{
+                    color: #333;
+                    margin-left: -5px;
+                }
+            }
+        }
+
+        .button{
+            position: absolute;
+            right: 0;
+            bottom: 0;
+        }
+    } 
+}
 </style>
 
 <template>
     <view>
+
+        <text class="van-block__title">基础信息</text>
         <van-cell-group>
             <van-cell title="部门" value="即墨销售部"/>
             <van-cell title="客户" value="刘健  即墨商超" is-link/>
             <van-cell title="商品" is-link/>
         </van-cell-group>
-        <van-panel title="商品总额" status="￥880">
-            <van-card title="商品标题">
-                <view slot="bottom">
-                    <text class="price">2.00</text>
-                    <text>x2（件）</text>
-                </view>
-                <view slot="footer">
-                    <van-button size="mini">按钮</van-button>
-                    <van-button size="mini">按钮</van-button>
-                </view>
-            </van-card>
-            <van-card title="商品标题">
-                <view slot="bottom">
-                    <text class="price">2.00</text>
-                    <text>x2（件）</text>
-                </view>
-                <view slot="footer">
-                    <van-button size="mini">按钮</van-button>
-                    <van-button size="mini">按钮</van-button>
-                </view>
-            </van-card>
+
+        <text class="van-block__title">商品信息</text>
+        <van-panel custom-class="goods_list" title="商品总额" status="￥880">
+            <van-cell-group>
+                <van-cell>
+                    <view slot="title">
+                        <van-card title="商品标题">
+                            <view slot="bottom" class="desc">
+                                <text class="price">2.00</text>
+                                <text>x10</text>
+                                <text>(件)</text>
+                            </view>
+                            <view slot="footer" class="button">
+                                <van-button size="mini" type="warning" plain>删除</van-button>
+                            </view>
+                        </van-card>
+                    </view>
+                </van-cell>
+                <van-cell>
+                    <view slot="title">
+                        <van-card title="商品标题">
+                            <view slot="bottom" class="desc">
+                                <text class="price">2.00</text>
+                                <text>x10</text>
+                                <text>(件)</text>
+                            </view>
+                            <view slot="footer" class="button">
+                                <van-button size="mini" type="warning" plain>删除</van-button>
+                            </view>
+                        </van-card>
+                    </view>
+                </van-cell>
+            </van-cell-group>
         </van-panel>
         
+        <text class="van-block__title">备注信息</text>
         <van-cell-group>
             <van-field
                 value="{{ message }}"
@@ -46,13 +102,14 @@
             button-text="提交"
             bind:submit="onSubmit"
             />
+
     </view>
 </template>
 
 <script>
 import wepy from 'wepy';
 
-export default class Index extends wepy.page {
+export default class OrderIndex extends wepy.page {
   config = {
     navigationBarTitleText: '开单',
     usingComponents: {
