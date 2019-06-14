@@ -1,0 +1,110 @@
+<style lang="less">
+.goods_list {
+  .van-card {
+    position: relative;
+    padding: 0;
+    background-color: transparent;
+
+    .van-card__title {
+      font-size: 14px;
+      font-weight: normal;
+      padding-bottom: 10px;
+    }
+
+    .desc {
+      color: #f44;
+      text {
+        padding-right: 10px;
+        font-size: 12px;
+        &:first-child {
+          font-size: 14px;
+        }
+        &:last-child {
+          color: #333;
+          margin-left: -5px;
+        }
+      }
+    }
+  }
+}
+</style>
+
+<template>
+  <view>
+    <van-panel title="批号" status="1906061203041026">
+      <van-cell-group>
+        <van-cell title="商品名称" value="蓝莓"/>
+      </van-cell-group>
+    </van-panel>
+    <text class="van-block__title">详细信息</text>
+    <view style="padding-bottom:10px">
+      <van-panel custom-class="goods_list">
+        <van-cell-group>
+          <van-cell title="即墨销售部" value="李杨杨"/>
+          <van-cell>
+            <view slot="title">
+              <van-card>
+                <view slot="bottom" class="desc">
+                  <text class="price">2.00</text>
+                  <text>x10</text>
+                  <text>(件)</text>
+                </view>
+              </van-card>
+            </view>
+          </van-cell>
+          <van-cell title="金额" value="￥1200"/>
+          <van-cell title="时间" value="2019-05-02 01:22:22"/>
+        </van-cell-group>
+      </van-panel>
+    </view>
+    <view style="padding-bottom:10px">
+      <van-panel custom-class="goods_list">
+        <van-cell-group>
+          <van-cell title="即墨销售部" value="李杨杨"/>
+          <van-cell>
+            <view slot="title">
+              <van-card>
+                <view slot="bottom" class="desc">
+                  <text class="price">2.00</text>
+                  <text>x10</text>
+                  <text>(件)</text>
+                </view>
+              </van-card>
+            </view>
+          </van-cell>
+          <van-cell title="金额" value="￥1200"/>
+          <van-cell title="时间" value="2019-05-02 01:22:22"/>
+        </van-cell-group>
+      </van-panel>
+    </view>
+  </view>
+</template>
+
+<script>
+import wepy from 'wepy';
+
+export default class MySaleDetails extends wepy.page {
+  config = {
+    navigationBarTitleText: '我的销售详情',
+    usingComponents: {
+      'van-panel': '../../components/vant/panel/index',
+      'van-cell': '../../components/vant/cell/index',
+      'van-cell-group': '../../components/vant/cell-group/index',
+      'van-card': '../../components/vant/card/index',
+      'van-panel': '../../components/vant/panel/index'
+    }
+  };
+
+  components = {};
+
+  data = {};
+
+  computed = {};
+
+  methods = {};
+
+  events = {};
+
+  onLoad() {}
+}
+</script>

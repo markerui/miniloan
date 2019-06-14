@@ -15,39 +15,26 @@
                 <van-tab title="本月"></van-tab>
                 <van-tab title="上月"></van-tab>
             </van-tabs>
-            <text class="van-block__title">筛选状态</text>
-            <van-tabs type="card">
-                <van-tab title="全部"></van-tab>
-                <van-tab title="待付款"></van-tab>
-                <van-tab title="已付款"></van-tab>
-                <van-tab title="已取消"></van-tab>
-            </van-tabs>
         </view>
         <scroll-view scroll-y style="height: 300px;">
             <view style="padding-top:10px">
-                <van-panel title="订单号1906061203041026" status="已付款" use-footer-slot>
+                <van-panel title="批号" status="1906061203041026">
                     <van-cell-group>
-                        <van-cell title="订单标识" value="1081"/>
-                        <van-cell title="订单时间" value="2019-06-05 18:30"/>
-                        <van-cell title="订单金额" value="￥1200"/>
+                        <van-cell title="名称" value="蓝莓"/>
+                        <van-cell title="件数" value="1081"/>
+                        <van-cell title="重量" value="80"/>
+                        <van-cell title="金额" value="￥1200"/>
                     </van-cell-group>
-                    <view slot="footer" style="text-align: right;">
-                        <van-button size="small">取消</van-button>
-                        <van-button size="small" type="danger">收款</van-button>
-                    </view>
                 </van-panel>
             </view>
             <view style="padding-top:10px">
-                <van-panel title="订单号1906061203041026" status="已付款" use-footer-slot>
+                <van-panel title="批号" status="1906061203041026">
                     <van-cell-group>
-                        <van-cell title="订单标识" value="1081"/>
-                        <van-cell title="订单时间" value="2019-06-05 18:30"/>
-                        <van-cell title="订单金额" value="￥1200"/>
+                        <van-cell title="名称" value="蓝莓"/>
+                        <van-cell title="件数" value="1081"/>
+                        <van-cell title="重量" value="80"/>
+                        <van-cell title="金额" value="￥1200"/>
                     </van-cell-group>
-                    <view slot="footer" style="text-align: right;">
-                        <van-button size="small">取消</van-button>
-                        <van-button size="small" type="danger">收款</van-button>
-                    </view>
                 </van-panel>
             </view>
         </scroll-view>
@@ -57,9 +44,9 @@
 <script>
 import wepy from 'wepy';
 
-export default class RecordSale extends wepy.page {
+export default class MySale extends wepy.page {
   config = {
-    navigationBarTitleText: '销售记录',
+    navigationBarTitleText: '我的销售',
     usingComponents: {
       'van-tab': '../../components/vant/tab/index',
       'van-tabs': '../../components/vant/tabs/index',

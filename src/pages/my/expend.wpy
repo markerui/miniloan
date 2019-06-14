@@ -17,23 +17,25 @@
     </van-row>
     
     <scroll-view scroll-y style="height: 300px;">
-            <view style="padding-top:10px">
-                <van-panel title="订单号"  status="1906061203041026">
-                    <van-cell-group>
-                        <van-cell title="结算金额" value="1081"/>
-                        <van-cell title="结算日期" value="2019-06-05 18:30"/>
-                    </van-cell-group>
-                </van-panel>
-            </view>
-            <view style="padding-top:10px">
-                <van-panel title="订单号"  status="1906061203041026">
-                    <van-cell-group>
-                        <van-cell title="结算金额" value="1081"/>
-                        <van-cell title="结算日期" value="2019-06-05 18:30"/>
-                    </van-cell-group>
-                </van-panel>
-            </view>
-        </scroll-view>
+        <view style="padding-top:10px">
+            <van-panel title="支出金额" status="￥1200">
+                <van-cell-group>
+                    <van-cell title="支出角色" value="即墨销售部"/>
+                    <van-cell title="支出原因" value="工商管理费"/>
+                    <van-cell title="支出时间" value="2019-05-02 01:22:22"/>
+                </van-cell-group>
+            </van-panel>
+        </view>
+        <view style="padding-top:10px">
+            <van-panel title="支出金额" status="￥1200">
+                <van-cell-group>
+                    <van-cell title="支出角色" value="即墨销售部"/>
+                    <van-cell title="支出原因" value="工商管理费"/>
+                    <van-cell title="支出时间" value="2019-05-02 01:22:22"/>
+                </van-cell-group>
+            </van-panel>
+        </view>
+    </scroll-view>
 
     <van-popup
       show="{{ show }}"
@@ -57,7 +59,7 @@ import wepy from 'wepy';
 
 export default class RecordSettle extends wepy.page {
   config = {
-    navigationBarTitleText: '结算记录',
+    navigationBarTitleText: '我的支出',
     usingComponents: {
       'van-field': '../../components/vant/field/index',
       'van-cell': '../../components/vant/cell/index',
