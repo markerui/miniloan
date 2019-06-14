@@ -16,7 +16,7 @@
                 <van-tab title="上月"></van-tab>
             </van-tabs>
         </view>
-        <scroll-view scroll-y style="height: 300px;">
+        <scroll-view scroll-y style="height: 500px;">
             <view style="padding-top:10px">
                 <van-panel title="批号" status="1906061203041026">
                     <van-cell-group>
@@ -52,7 +52,6 @@ export default class MySale extends wepy.page {
       'van-tabs': '../../components/vant/tabs/index',
       'van-search': '../../components/vant/search/index',
       'van-panel': '../../components/vant/panel/index',
-      'van-button': '../../components/vant/button/index',
       'van-cell': '../../components/vant/cell/index',
       'van-cell-group': '../../components/vant/cell-group/index'
     }
