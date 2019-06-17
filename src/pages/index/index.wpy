@@ -42,40 +42,54 @@ each(@setcolor, {
   }
 });
 
+.fixed-bottom{
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    &.isIpx{
+        .van-button{
+            height: 65px;
+        }
+    }
+}
 </style>
 
 <template>
     <view>
         <van-row>
-            <van-col span="24">用户头像</van-col>
-        </van-row>
-        <van-row>
-            <van-col span="12" class="c c1">
-                <van-icon name="add-o" size="250px"/>我要开单
-            </van-col>
-            <van-col span="12" class="c c2">
-                <van-icon name="todo-list-o" size="250px"/>销售记录
-            </van-col>
-        </van-row>
-        <van-row>
-            <van-col span="12" class="c c3">
-                <van-icon name="records" size="250px"/>马上开单
-            </van-col>
-            <van-col span="12" class="c c4">
-                <van-icon name="notes-o" size="250px"/>销售记录
+            <van-col span="24">
+                <van-row>
+                    <van-col span="24">
+                        <img src="{{userInfo.headImg}}" alt="">
+                    </van-col>
+                    <van-col span="24">{{userInfo.regionName}} - {{userInfo.name}}</van-col>
+                </van-row>
             </van-col>
         </van-row>
-        <van-row>
-            <van-col span="8" class="c c5">
-                <van-icon name="brush-o" size="250px"/>我的销售
-            </van-col>
-            <van-col span="8" class="c c6">
-                <van-icon name="balance-o" size="250px"/>我的支出
-            </van-col>
-            <van-col span="8" class="c c7">
-                <van-icon name="label-o" size="250px"/>结算记录
-            </van-col>
-        </van-row>
+        <block wx:if="{{userType == 1}}">
+            <van-row>
+                <van-col span="12" class="c c1">
+                    <van-icon name="add-o" size="250px"/>我要开单
+                </van-col>
+                <van-col span="12" class="c c2">
+                    <van-icon name="notes-o" size="250px"/>销售记录
+                </van-col>
+            </van-row>
+        </block>
+        <block wx:if="{{userType == 2}}">
+            <van-row>
+                <van-col span="8" class="c c5">
+                    <van-icon name="brush-o" size="250px"/>我的销售
+                </van-col>
+                <van-col span="8" class="c c6">
+                    <van-icon name="balance-o" size="250px"/>我的支出
+                </van-col>
+                <van-col span="8" class="c c7">
+                    <van-icon name="label-o" size="250px"/>结算记录
+                </van-col>
+            </van-row>
+        </block>
         <van-row>
             <van-col span="12" class="c c8">
                 <van-icon name="chat-o" size="250px"/>绑定微信
@@ -84,12 +98,19 @@ each(@setcolor, {
                 <van-icon name="medel-o" size="250px"/>修改密码
             </van-col>
         </van-row>
-        <van-button type="danger" size="large">切换登录</van-button>
+        <view class="{{isIpx ? 'isIpx fixed-bottom' : 'fixed-bottom'}}">
+            <van-button type="danger" size="large">切换登录</van-button>
+        </view>
+        <van-toast id="van-toast"/>
+        <van-dialog id="van-dialog"/>
     </view>
 </template>
 
 <script>
 import wepy from 'wepy';
+import Api from '../../utils/api';
+import Toast from '../../components/vant/toast/toast';
+import Dialog from '../../components/vant/dialog/dialog';
 
 export default class Index extends wepy.page {
   config = {
@@ -99,13 +120,19 @@ export default class Index extends wepy.page {
       'van-button': '../../components/vant/button/index',
       'van-row': '../../components/vant/row/index',
       'van-col': '../../components/vant/col/index',
-      'van-icon': '../../components/vant/icon/index'
+      'van-icon': '../../components/vant/icon/index',
+      'van-toast': '../../components/vant/toast/index',
+      'van-dialog': '../../components/vant/dialog/index'
     }
   };
 
   components = {};
 
-  data = {};
+  data = {
+    userType: 0,
+    isIpx: false,
+    userInfo: []
+  };
 
   computed = {};
 
@@ -113,6 +140,39 @@ export default class Index extends wepy.page {
 
   events = {};
 
-  onLoad() {}
+  GetStaffGetUserInfo() {
+    var that = this;
+    Api.StaffGetUserInfo(function(res) {
+      console.log(res);
+      if (res.result) {
+        that.userInfo = res.resultData.userInfo;
+        that.$apply();
+      }
+    });
+  }
+
+  GetOwnerGetUserInfo() {
+    var that = this;
+    Api.OwnerGetUserInfo(function(res) {
+      console.log(res);
+      if (res.result) {
+        that.userInfo = res.resultData.memberInfo;
+        console.log(res.resultData.memberInfo);
+        that.$apply();
+      }
+    });
+  }
+
+  onLoad() {
+    try {
+      this.userType = wx.getStorageSync('userType');
+      this.isIpx = this.$parent.globalData.isIpx;
+      if (this.userType == 1) {
+        this.GetStaffGetUserInfo();
+      } else {
+        this.GetOwnerGetUserInfo();
+      }
+    } catch (e) {}
+  }
 }
 </script>

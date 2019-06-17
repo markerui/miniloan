@@ -17,19 +17,18 @@ import 'wepy-async-function';
 export default class extends wepy.app {
   config = {
     pages: [
+      'pages/index/index',
+      'pages/login',
       'pages/my/sale',
       'pages/my/saledetails',
-
       'pages/my/expend',
       'pages/record/settle',
       'pages/record/sale',
       'pages/record/details',
-      'pages/index/index',
       'pages/goods/index',
       'pages/order/index',
       'pages/client/index',
-      'pages/eidtdpassword',
-      'pages/login'
+      'pages/eidtdpassword'
     ],
     window: {
       backgroundTextStyle: 'light',
@@ -40,10 +39,21 @@ export default class extends wepy.app {
   };
 
   globalData = {
-    userInfo: null
+    userInfo: null,
+    isIpx: false
   };
 
-  onLaunch() {}
+  onLaunch() {
+    var that = this;
+    wx.getSystemInfo({
+      success: function(res) {
+        let model = res.model.substring(0, res.model.indexOf('X')) + 'X';
+        if (model == 'iPhone X') {
+          that.globalData.isIpx = true; //判断是否为iPhone X 默认为值false，iPhone X 值为true
+        }
+      }
+    });
+  }
 
   getUserInfo(cb) {
     const that = this;

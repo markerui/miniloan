@@ -21,7 +21,7 @@
   <view class="login">
 
     <view class="tab-card">
-      <van-tabs type="card" active="{{ active }}" bind:change="onChange">
+      <van-tabs type="card" active="{{ loginInfo.type-1 }}" bind:change="onChangeTabs">
         <van-tab title="员工登录"></van-tab>
         <van-tab title="货主登录"></van-tab>
       </van-tabs>
@@ -29,36 +29,46 @@
 
     <van-cell-group >
       <van-field
-        value="{{ username }}"
+        value="{{ loginInfo.username }}"
         required
         clearable
         label="用户名"
         placeholder="请输入用户名"
         size="large"
+        data-name="username"  
+        @change="onInput" 
       />
 
       <van-field
-        value="{{ password }}"
+        value="{{ loginInfo.pwd }}"
         type="password"
         required
         label="密码"
         placeholder="请输入密码"
         size="large"
         border="{{ false }}"
+        data-name="pwd"  
+        @change="onInput" 
       />
     </van-cell-group>
 
     <view class="login-btn">
-      <van-button type="danger" size="large">马上登录</van-button>
+      <van-button type="danger" size="large" @tap="onLogin">马上登录</van-button>
       <text>---OR---</text>
       <van-button type="primary" size="large">微信授权一键登录</van-button>
     </view>
     
+    <van-toast id="van-toast" />
+    <van-dialog id="van-dialog" />
+
   </view>
 </template>
 
 <script>
 import wepy from 'wepy';
+import Api from '../utils/api';
+import Toast from '../components/vant/toast/toast';
+import Dialog from '../components/vant/dialog/dialog';
 
 export default class Login extends wepy.page {
   config = {
@@ -67,17 +77,60 @@ export default class Login extends wepy.page {
       'van-field': '../components/vant/field/index',
       "van-button": "../components/vant/button/index",
       "van-tab": "../components/vant/tab/index",
-      "van-tabs": "../components/vant/tabs/index"
+      "van-tabs": "../components/vant/tabs/index",
+      "van-toast": "../components/vant/toast/index",
+      "van-dialog": "../components/vant/dialog/index"
     }
   };
 
   components = {};
 
-  data = {};
+  data = {
+    loginInfo: {
+      type: 1,
+      username: '13612321689',
+      pwd: '321689'
+    }
+  };
 
   computed = {};
 
-  methods = {};
+  methods = {
+    onInput(e){
+      var value = e.detail;
+      var name = e.currentTarget.dataset.name;
+      this.loginInfo[name] = value;
+    },
+    onChangeTabs(event){
+      this.loginInfo.type = event.detail.index + 1;
+    },
+    onLogin(){
+      this.login();
+    }
+  };
+
+  login(){
+    var that = this;
+    Toast.loading({
+      mask: true,
+      message: '登录中...'
+    });
+    Api.Login(that.loginInfo,function(res){
+      Toast.clear();
+      if(res.result){
+        wx.setStorageSync('userType', that.loginInfo.type);
+        wx.setStorageSync('tokenId', res.resultData.tokenId);
+        wx.redirectTo({
+          url: 'index/index'
+        });
+      }else{
+        Dialog.alert({
+          title: '提示',
+          message: res.message
+        });
+      }
+    })
+  };
 
   events = {};
 
