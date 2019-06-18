@@ -19,7 +19,7 @@
       <block wx:if="{{resultData.dataList.length>0}}">
       <van-cell-group>
         <repeat for="{{resultData.dataList}}" key="index" index="index" item="item">
-          <van-cell title="{{item.productName}}" value="{{item.ownerName}}" size="large" label="批号{{item.batchNum}}"/>
+          <van-cell title="{{item.productName}}" value="{{item.ownerName}}" size="large" label="批号{{item.batchNum}}" id="{{index}}" @tap="onCheckGoods"/>
         </repeat>
       </van-cell-group>
       </block>
@@ -30,48 +30,36 @@
 
     <van-dialog
       use-slot
-      show="{{ show }}"
+      show="{{ checkInfoShow }}"
       show-cancel-button
-      confirm-button-open-type="getUserInfo"
-      bind:close="onClose"
-      bind:getuserinfo="getUserInfo"
+      bind:close="onCloseDialog"
+      bind:confirm="onConfirmDialog"
     >
       <view class="dialog-box">
-        <text class="van-block__title">当初操作</text>
+        <text class="van-block__title">当前操作</text>
         <van-cell-group>
-          <van-field value="红蛇果" label="商品" readonly/>
-          <van-field value="李三" label="货主" readonly/>
-          <van-field value="1906061234561388" label="批号" readonly/>
+          <van-field value="{{checkInfo.productName}}" label="商品" readonly/>
+          <van-field value="{{checkInfo.ownerName}}" label="货主" readonly/>
+          <van-field value="{{checkInfo.batchNum}}" label="批号" readonly/>
         </van-cell-group>
         <text class="van-block__title">方式</text>
-        <van-radio-group value="{{ radio }}" bind:change="onChange">
-          <van-cell-group>
-            <van-cell
-              title="重量(斤)"
-              value-class="value-class"
-              clickable
-              data-name="1"
-              bind:click="onClick"
-            >
-              <van-radio name="1"/>
-            </van-cell>
-            <van-cell
-              title="件"
-              value-class="value-class"
-              clickable
-              data-name="2"
-              bind:click="onClick"
-            >
-              <van-radio name="2"/>
-            </van-cell>
-          </van-cell-group>
-          <text class="van-block__title">基本信息</text>
-          <van-cell-group>
-            <van-field value="" placeholder="件数" label="件数"/>
-            <van-field value="" placeholder="重量" label="重量"/>
-            <van-field value="" placeholder="单价" label="单价"/>
-          </van-cell-group>
-        </van-radio-group>
+        <van-tabs type="card"  active="{{ tabsActive }}" @change="onChangeTabs">
+          <van-tab title="重量(斤)"></van-tab>
+          <van-tab title="件"></van-tab>
+        </van-tabs>
+        <text class="van-block__title">基本信息</text>
+        <van-cell-group>
+          <block wx:if="{{tabsActive}}">
+            <van-field value="{{inputData.Packages}}" placeholder="件数" label="件数" data-name="Packages"  
+        @change="onInput" />
+          </block>
+          <block wx:else>
+            <van-field value="{{inputData.Weight}}" placeholder="重量" label="重量" data-name="Weight"  
+        @change="onInput" />
+          </block>
+          <van-field value="{{inputData.Price}}" placeholder="单价" label="单价" data-name="Price"  
+        @change="onInput" />
+        </van-cell-group>
       </view>
     </van-dialog>
 
@@ -97,10 +85,10 @@ export default class GoodsIndex extends wepy.page {
       'van-cell-group': '../../components/vant/cell-group/index',
       'van-dialog': '../../components/vant/dialog/index',
       'van-field': '../../components/vant/field/index',
-      'van-radio': '../../components/vant/radio/index',
-      'van-radio-group': '../../components/vant/radio-group/index',
       'van-toast': '../../components/vant/toast/index',
-      "van-icon": "../../components/vant/icon/index"
+      "van-icon": "../../components/vant/icon/index",
+      "van-tab": "../../components/vant/tab/index",
+      "van-tabs": "../../components/vant/tabs/index"
     }
   };
 
@@ -111,7 +99,9 @@ export default class GoodsIndex extends wepy.page {
   data = {
     windowHeight: 0,
     hasNextPage: true,
-    show: false,
+    checkInfoShow: false,
+    checkInfo: [],
+    tabsActive: 0,
     QueryData: {
       pageIndex: 1,
       pageSize: 10,
@@ -119,18 +109,68 @@ export default class GoodsIndex extends wepy.page {
     },
     resultData: {
       dataList: []
+    },
+    ProductList: [],
+    inputData: {
+      ProductID: 0,
+      Packages: '',
+      Weight: '',
+      Price: ''
     }
   };
 
   computed = {};
 
   methods = {
+    onInput(e){
+      var value = e.detail;
+      var name = e.currentTarget.dataset.name;
+      this.inputData[name] = value;
+    },
+    onChangeTabs(event) {
+      this.tabsActive = event.detail.index;
+    },
     onSearch(e) {
       this.QueryData.keyword = e.detail;
       this.QueryData.pageIndex = 1;
       this.hasNextPage = true;
       this.resultData.dataList = [];
       this.StaffGetProductList();
+    },
+    onCheckGoods(e){
+      var index = e.currentTarget.id;
+      this.checkInfoShow = true;
+      this.inputData.Packages = '';
+      this.inputData.Weight = '';
+      this.inputData.Price = '';
+      this.inputData.ProductID = this.resultData.dataList[index].id;
+      this.checkInfo = this.resultData.dataList[index];
+    },
+    onCloseDialog(){
+      this.checkInfoShow = false;
+      this.$apply();
+    },
+    onConfirmDialog(){
+      var result = this.ProductList;
+      this.checkInfoShow = false;
+      if(this.inputData.Packages == ''){
+          this.inputData.Packages = 0;
+      }
+      if(this.inputData.Weight == ''){
+          this.inputData.Weight = 0;
+      }
+      if(this.inputData.Price == ''){
+          this.inputData.Price = 0;
+      }
+      var inputNewData = {
+        ProductID: 0,
+        Packages: this.inputData.Packages,
+        Weight: this.inputData.Weigh,
+        Price: this.inputData.Price
+      }
+      this.ProductList = result.concat(inputNewData);
+      console.log(this.ProductList)
+      this.$apply();
     },
     scrollLower(){
       this.StaffGetProductList();
