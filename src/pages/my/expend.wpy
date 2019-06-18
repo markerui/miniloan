@@ -5,14 +5,14 @@
   <view>
 
     <van-row>
-      <van-col span="10">
-        <van-field value="开始时间" readonly/>
+      <van-col span="10" @tap="onCheckStartDate">
+        <van-field value="{{ QueryData.startDate }}" readonly/>
       </van-col>
       <van-col span="4">
         <van-field value="至" readonly/>
       </van-col>
-      <van-col span="10">
-        <van-field value="结束时间" readonly/>
+      <van-col span="10" @tap="onCheckEndDate">
+        <van-field value="{{ QueryData.endDate }}" readonly/>
       </van-col>
     </van-row>
     
@@ -38,24 +38,40 @@
     </scroll-view>
 
     <van-popup
-      show="{{ show }}"
-      position="top"
-      overlay="{{ false }}"
-      bind:close="onClose"
+      show="{{ startDateShow }}"
+      position="bottom"
+      overlay="{{ true }}"
     >
       <van-datetime-picker
           type="date"
-          value="{{ currentDate }}"
-          bind:input="onInput"
-          formatter="{{ formatter }}"
+          value="{{ startDate }}"
+          @confirm="onStartConfirm"
+          @cancel="onCancelPopup"
         />
     </van-popup>
-    
+    <van-popup
+      show="{{ endDateShow }}"
+      position="bottom"
+      overlay="{{ true }}"
+    >
+      <van-datetime-picker
+          type="date"
+          value="{{ endDate }}"
+          @confirm="onEndConfirm"
+          @cancel="onCancelPopup"
+        />
+    </van-popup>
+    <van-toast id="van-toast"/>
+    <van-dialog id="van-dialog"/>
   </view>
 </template>
 
 <script>
 import wepy from 'wepy';
+import Api from '../../utils/api';
+import util from '../../utils/utils';
+import Toast from '../../components/vant/toast/toast';
+import Dialog from '../../components/vant/dialog/dialog';
 
 export default class RecordSettle extends wepy.page {
   config = {
@@ -69,30 +85,61 @@ export default class RecordSettle extends wepy.page {
       'van-datetime-picker': '../../components/vant/datetime-picker/index',
       "van-popup": "../../components/vant/popup/index",
       'van-panel': '../../components/vant/panel/index',
+      'van-toast': '../../components/vant/toast/index',
+      'van-dialog': '../../components/vant/dialog/index'
     }
   };
 
   components = {};
 
   data = {
-    currentDate: new Date().getTime(),
+    startDateShow: false,
+    endDateShow: false,
     minDate: new Date().getTime(),
-    formatter(type, value) {
-      if (type === 'year') {
-        return `${value}年`;
-      } else if (type === 'month') {
-        return `${value}月`;
-      }
-      return value;
-    }
+    startDate: new Date().getTime(),
+    endDate: new Date().getTime(),
+    QueryData: {
+      startDate: util.formatTime(new Date().getTime()),
+      endDate: util.formatTime(new Date().getTime()),
+      pageIndex: 1,
+      pageSize: 1,
+    },
   };
 
   computed = {};
 
-  methods = {};
-
+  methods = {
+    onCheckStartDate(){
+      this.startDateShow = true;
+    },
+    onCheckEndDate(){
+      this.endDateShow = true;
+    },
+    onCancelPopup(){
+      this.startDateShow = false;
+      this.endDateShow = false;
+    },
+    onStartConfirm(e){
+      this.QueryData.startDate = util.formatTime(e.detail);
+      this.startDateShow = false;
+    },
+    onEndConfirm(e){
+      this.QueryData.endDate = util.formatTime(e.detail);
+      this.endDateShow = false;
+    }
+  };
+  
   events = {};
 
-  onLoad() {}
+  OwnerGetExpenseList(){
+    var that = this;
+    Api.OwnerGetExpenseList(that.QueryData,function(res){
+      console.log(res)
+    });
+  }
+
+  onLoad() {
+    this.OwnerGetExpenseList();
+  }
 }
 </script>

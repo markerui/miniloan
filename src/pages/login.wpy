@@ -43,6 +43,7 @@
         value="{{ loginInfo.pwd }}"
         type="password"
         required
+        clearable
         label="密码"
         placeholder="请输入密码"
         size="large"
@@ -87,9 +88,9 @@ export default class Login extends wepy.page {
 
   data = {
     loginInfo: {
-      type: 1,
-      username: '13612321689',
-      pwd: '321689'
+      type: 2,
+      username: '13666666666',
+      pwd: '666666'
     }
   };
 

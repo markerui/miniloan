@@ -109,21 +109,44 @@ function getUserInfo(data, cb) {
 }
 
 //获取员工个人信息接口
-function StaffGetUserInfo(data, cb) {
-  GetData('Staff/GetUserInfo', data, function (res) {
+function StaffGetUserInfo(cb) {
+  GetData('Staff/GetUserInfo', '', function (res) {
     if (cb) {
       cb(res)
     }
   });
 }
+
 //获取货主个人信息接口
-function OwnerGetUserInfo(data, cb) {
-  GetData('Owner/GetUserInfo', data, function (res) {
+function OwnerGetUserInfo(cb) {
+  GetData('Owner/GetUserInfo', '', function (res) {
     if (cb) {
       cb(res)
     }
   });
 }
+
+
+//我的销售
+function OwnerGetSaleList(data, cb) {
+  GetData('Owner/GetSaleList', data, function (res) {
+    if (cb) {
+      cb(res)
+    }
+  });
+}
+
+//我的支出
+function OwnerGetExpenseList(data, cb) {
+  GetData('Owner/GetExpenseList', data, function (res) {
+    if (cb) {
+      cb(res)
+    }
+  });
+}
+
+
+
 
 
 module.exports = {
@@ -132,5 +155,7 @@ module.exports = {
   Login: Login,
   getUserInfo: getUserInfo,
   StaffGetUserInfo: StaffGetUserInfo,
-  OwnerGetUserInfo: OwnerGetUserInfo
+  OwnerGetUserInfo: OwnerGetUserInfo,
+  OwnerGetSaleList: OwnerGetSaleList,
+  OwnerGetExpenseList: OwnerGetExpenseList
 };

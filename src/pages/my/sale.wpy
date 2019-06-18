@@ -6,10 +6,10 @@
 
 <template>
     <view>
-        <van-search placeholder="请输入订单号或客户姓名"/>
+        <van-search placeholder="请输入订单号或客户姓名" bind:search="onSearch"/>
         <view style="padding-bottom: 15px;">
             <text class="van-block__title">筛选时间</text>
-            <van-tabs type="card">
+            <van-tabs type="card" active="{{ tabsActive }}" @change="onChangeTabs">
                 <van-tab title="今日"></van-tab>
                 <van-tab title="昨日"></van-tab>
                 <van-tab title="本月"></van-tab>
@@ -17,32 +17,29 @@
             </van-tabs>
         </view>
         <scroll-view scroll-y style="height: 500px;">
-            <view style="padding-top:10px">
-                <van-panel title="批号" status="1906061203041026">
-                    <van-cell-group>
-                        <van-cell title="名称" value="蓝莓"/>
-                        <van-cell title="件数" value="1081"/>
-                        <van-cell title="重量" value="80"/>
-                        <van-cell title="金额" value="￥1200"/>
-                    </van-cell-group>
-                </van-panel>
-            </view>
-            <view style="padding-top:10px">
-                <van-panel title="批号" status="1906061203041026">
-                    <van-cell-group>
-                        <van-cell title="名称" value="蓝莓"/>
-                        <van-cell title="件数" value="1081"/>
-                        <van-cell title="重量" value="80"/>
-                        <van-cell title="金额" value="￥1200"/>
-                    </van-cell-group>
-                </van-panel>
-            </view>
+            <repeat for="{{resultData.datalist}}" key="index" index="index" item="item">
+                <view style="padding-top:10px">
+                    <van-panel title="批号" status="{{item.batchNum}}">
+                        <van-cell-group>
+                            <van-cell title="名称" value="{{item.productName}}"/>
+                            <van-cell title="件数" value="{{item.totalPackages}}"/>
+                            <van-cell title="重量" value="{{item.totalWeight}}"/>
+                            <van-cell title="金额" value="{{item.totalPrice}}"/>
+                        </van-cell-group>
+                    </van-panel>
+                </view>
+            </repeat>
         </scroll-view>
+        <van-toast id="van-toast"/>
+        <van-dialog id="van-dialog"/>
     </view>
 </template>
 
 <script>
 import wepy from 'wepy';
+import Api from '../../utils/api';
+import Toast from '../../components/vant/toast/toast';
+import Dialog from '../../components/vant/dialog/dialog';
 
 export default class MySale extends wepy.page {
   config = {
@@ -53,20 +50,70 @@ export default class MySale extends wepy.page {
       'van-search': '../../components/vant/search/index',
       'van-panel': '../../components/vant/panel/index',
       'van-cell': '../../components/vant/cell/index',
-      'van-cell-group': '../../components/vant/cell-group/index'
+      'van-cell-group': '../../components/vant/cell-group/index',
+      'van-toast': '../../components/vant/toast/index',
+      'van-dialog': '../../components/vant/dialog/index'
     }
   };
 
   components = {};
 
-  data = {};
+  data = {
+    QueryData: {
+      date: 'today',
+      pageIndex: 1,
+      pageSize: 1,
+      keyword: ''
+    },
+    tabsActive: 0,
+    resultData: []
+  };
 
-  computed = {};
+  watch = {
+    tabsActive(newValue, oldValue) {
+      switch (newValue) {
+        case 0:
+          this.QueryData.date = 'today';
+          break;
+        case 1:
+          this.QueryData.date = 'yday';
+          break;
+        case 2:
+          this.QueryData.date = 'tmontgh';
+          break;
+        case 3:
+          this.QueryData.date = 'lmonth';
+          break;
+        default:
+          break;
+      }
+      this.OwnerGetSaleList();
+    }
+  };
 
-  methods = {};
+  methods = {
+    onChangeTabs(event) {
+      this.tabsActive = event.detail.index;
+    },
+    onSearch(e) {
+      this.QueryData.keyword = e.detail;
+      this.OwnerGetSaleList();
+    }
+  };
 
+  OwnerGetSaleList() {
+    var that = this;
+    Api.OwnerGetSaleList(that.QueryData, function(res) {
+      if (res.result) {
+        that.resultData = res.resultData;
+        that.$apply();
+      }
+    });
+  }
   events = {};
 
-  onLoad() {}
+  onLoad() {
+    this.OwnerGetSaleList();
+  }
 }
 </script>

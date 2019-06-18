@@ -8,6 +8,32 @@
   font-size: 18px;
   position: relative;
   overflow: hidden;
+  &.user-info{
+    padding: 0;
+    border: none;
+  }
+  &.user-img{
+    border: none;
+    padding: 20px;
+    image{
+      width: 100px;
+      height: 100px;
+      border-radius: 100%;
+    }
+  }
+  &.user-name{
+    padding: 0 0 20px 0;
+    border: none;
+  }
+
+  &.user-total{
+    padding: 0 0 20px 0;
+    border: none;
+    font-size: 12px;
+    text{
+      display: block;
+    }
+  }
   
   .van-icon{
       position: absolute;
@@ -56,54 +82,72 @@ each(@setcolor, {
 </style>
 
 <template>
-    <view>
+  <view>
+    <van-row>
+      <van-col span="24" custom-class="user-info">
         <van-row>
-            <van-col span="24">
-                <van-row>
-                    <van-col span="24">
-                        <img src="{{userInfo.headImg}}" alt="">
-                    </van-col>
-                    <van-col span="24">{{userInfo.regionName}} - {{userInfo.name}}</van-col>
-                </van-row>
-            </van-col>
-        </van-row>
-        <block wx:if="{{userType == 1}}">
+          <van-col span="24" custom-class="user-img">
+            <image mode="aspectFit" src="{{userInfo.headImg}}">
+          </van-col>
+          <van-col span="24" custom-class="user-name">
+            {{userInfo.regionName}} <block wx:if="{{userInfo.regionName}}">-</block> {{userInfo.name}}
+          </van-col>
+          <block wx:if="{{userType == 2}}">
             <van-row>
-                <van-col span="12" class="c c1">
-                    <van-icon name="add-o" size="250px"/>我要开单
-                </van-col>
-                <van-col span="12" class="c c2">
-                    <van-icon name="notes-o" size="250px"/>销售记录
-                </van-col>
+              <van-col span="8" custom-class="user-total">
+                <text>总销售</text>
+                <text>{{userInfo.totalSale}}元</text>
+              </van-col>
+              <van-col span="8" custom-class="user-total">
+                <text>已结算</text>
+                <text>{{userInfo.totalsettlement}}元</text>
+              </van-col>
+              <van-col span="8" custom-class="user-total">
+                <text>总支出</text>
+                <text>{{userInfo.totalExpense}}元</text>
+              </van-col>
             </van-row>
-        </block>
-        <block wx:if="{{userType == 2}}">
-            <van-row>
-                <van-col span="8" class="c c5">
-                    <van-icon name="brush-o" size="250px"/>我的销售
-                </van-col>
-                <van-col span="8" class="c c6">
-                    <van-icon name="balance-o" size="250px"/>我的支出
-                </van-col>
-                <van-col span="8" class="c c7">
-                    <van-icon name="label-o" size="250px"/>结算记录
-                </van-col>
-            </van-row>
-        </block>
-        <van-row>
-            <van-col span="12" class="c c8">
-                <van-icon name="chat-o" size="250px"/>绑定微信
-            </van-col>
-            <van-col span="12" class="c c9">
-                <van-icon name="medel-o" size="250px"/>修改密码
-            </van-col>
+          </block>
         </van-row>
-        <view class="{{isIpx ? 'isIpx fixed-bottom' : 'fixed-bottom'}}">
-            <van-button type="danger" size="large">切换登录</van-button>
-        </view>
-        <van-toast id="van-toast"/>
-        <van-dialog id="van-dialog"/>
+      </van-col>
+    </van-row>
+    <block wx:if="{{userType == 1}}">
+      <van-row>
+        <van-col span="12" class="c c1"  data-url="../order/index" @tap="onGoPage">
+          <van-icon name="add-o" size="250px"/>我要开单
+        </van-col>
+        <van-col span="12" class="c c2"  data-url="../record/sale" @tap="onGoPage">
+          <van-icon name="notes-o" size="250px"/>销售记录
+        </van-col>
+      </van-row>
+    </block>
+    <block wx:if="{{userType == 2}}">
+      <van-row>
+        <van-col span="8" class="c c5" data-url="../my/sale" @tap="onGoPage">
+          <van-icon name="brush-o" size="250px"/>我的销售
+        </van-col>
+        <van-col span="8" class="c c6" data-url="../my/expend" @tap="onGoPage">
+          <van-icon name="balance-o" size="250px"/>我的支出
+        </van-col>
+        <van-col span="8" class="c c7" data-url="../record/settle" @tap="onGoPage">
+          <van-icon name="label-o" size="250px"/>结算记录
+        </van-col>
+      </van-row>
+    </block>
+    <van-row>
+      <van-col span="12" class="c c8" data-url="" @tap="onGoPage">
+        <van-icon name="chat-o" size="250px"/>绑定微信
+      </van-col>
+      <van-col span="12" class="c c9" data-url="../eidtdpassword" @tap="onGoPage">
+        <van-icon name="medel-o" size="250px"/>修改密码
+      </van-col>
+    </van-row>
+    <view class="{{isIpx ? 'isIpx fixed-bottom' : 'fixed-bottom'}}">
+      <van-button type="danger" size="large">切换登录</van-button>
     </view>
+    <van-toast id="van-toast"/>
+    <van-dialog id="van-dialog"/>
+  </view>
 </template>
 
 <script>
@@ -136,14 +180,22 @@ export default class Index extends wepy.page {
 
   computed = {};
 
-  methods = {};
+  methods = {
+    onGoPage(e){
+      var url = e.currentTarget.dataset.url;
+      wx.navigateTo({
+        url: url
+      });
+    }
+  };
 
-  events = {};
+  events = {
+    
+  };
 
   GetStaffGetUserInfo() {
     var that = this;
     Api.StaffGetUserInfo(function(res) {
-      console.log(res);
       if (res.result) {
         that.userInfo = res.resultData.userInfo;
         that.$apply();
@@ -154,23 +206,22 @@ export default class Index extends wepy.page {
   GetOwnerGetUserInfo() {
     var that = this;
     Api.OwnerGetUserInfo(function(res) {
-      console.log(res);
       if (res.result) {
         that.userInfo = res.resultData.memberInfo;
-        console.log(res.resultData.memberInfo);
         that.$apply();
       }
     });
   }
 
   onLoad() {
+    var that = this;
     try {
-      this.userType = wx.getStorageSync('userType');
-      this.isIpx = this.$parent.globalData.isIpx;
-      if (this.userType == 1) {
-        this.GetStaffGetUserInfo();
+      that.userType = wx.getStorageSync('userType');
+      that.isIpx = that.$parent.globalData.isIpx;
+      if (that.userType == 1) {
+        that.GetStaffGetUserInfo();
       } else {
-        this.GetOwnerGetUserInfo();
+        that.GetOwnerGetUserInfo();
       }
     } catch (e) {}
   }
