@@ -3,19 +3,34 @@
 
 <template>
   <view>
-    <van-search placeholder="请输入客户名称/电话"/>
-    <view style="padding-top:10px;">
-      <van-cell-group>
-        <van-cell title="刘健" value="即墨商超" size="large" label="136****2586"/>
-        <van-cell title="刘健" value="即墨商超" size="large" label="136****2586"/>
-        <van-cell title="刘健" value="即墨商超" size="large" label="136****2586"/>
-      </van-cell-group>
+    <view class="top-box">
+      <van-search placeholder="请输入客户名称/电话" @search="onSearch"/>
     </view>
+    <scroll-view scroll-y style="height: {{windowHeight}}px; padding-top:10px;" bindscrolltolower="scrollLower">
+      <block wx:if="{{resultData.dataList.length>0}}">
+      <van-cell-group>
+        <repeat for="{{resultData.dataList}}" key="index" index="index" item="item">
+          <van-cell title="{{item.name}}" value="{{item.tag}}" size="large" label="{{item.mobile}}" id="{{index}}" @tap="onCheckClient"/>
+        </repeat>
+      </van-cell-group>
+      </block>
+      <block wx:else>
+          <nodata></nodata>
+      </block>
+    </scroll-view>
+
+
+    <van-toast id="van-toast"/>
+    <van-dialog id="van-dialog"/>
   </view>
 </template>
 
 <script>
 import wepy from 'wepy';
+import Api from '../../utils/api';
+import Toast from '../../components/vant/toast/toast';
+import Dialog from '../../components/vant/dialog/dialog';
+import noData from '../../components/nodata';
 
 export default class ClientIndex extends wepy.page {
   config = {
@@ -23,20 +38,92 @@ export default class ClientIndex extends wepy.page {
     usingComponents: {
       'van-search': '../../components/vant/search/index',
       'van-cell': '../../components/vant/cell/index',
-      'van-cell-group': '../../components/vant/cell-group/index'
+      'van-cell-group': '../../components/vant/cell-group/index',
+      'van-toast': '../../components/vant/toast/index',
+      'van-dialog': '../../components/vant/dialog/index',
+       "van-icon": "../../components/vant/icon/index"
     }
   };
 
-  components = {};
+  components = {
+    nodata: noData
+  };
 
-  data = {};
+  data = {
+    windowHeight: 0,
+    hasNextPage: true,
+    QueryData: {
+      pageIndex: 1,
+      pageSize: 10,
+      keyword: ''
+    },
+    resultData: {
+      dataList: []
+    }
+  };
 
   computed = {};
 
-  methods = {};
+  methods = {
+    onCheckClient(e){
+      wx.setStorage({
+        key: "clientInfo",
+        data: this.resultData.dataList[e.currentTarget.id]
+      });
+      wx.navigateBack({
+        delta: 1
+      });
+    },
+    onSearch(e) {
+      this.QueryData.keyword = e.detail;
+      this.QueryData.pageIndex = 1;
+      this.hasNextPage = true;
+      this.resultData.dataList = [];
+      this.StaffGetCustomerList();
+    },
+    scrollLower(){
+      this.StaffGetCustomerList();
+    }
+  };
 
   events = {};
 
-  onLoad() {}
+  StaffGetCustomerList(){
+    var that = this;
+    var result = that.resultData.dataList;
+    if(that.hasNextPage){
+      Toast.loading({
+        message: '加载中...',
+      });
+      Api.StaffGetCustomerList(that.QueryData,function(res){
+        Toast.clear();
+        if (res.result) {
+          that.resultData.dataList = result.concat(res.resultData.dataList);
+          that.hasNextPage = res.resultData.hasNextPage;
+          that.QueryData.pageIndex += 1;
+          that.$apply();
+        }
+      });
+    }else{
+      Toast({
+        position: 'bottom',
+        message: '没有更多数据了',
+        duration: 1000
+      });
+    }
+  }
+
+  onLoad() {
+    let that = this;
+    let windowHeight = wx.getSystemInfoSync().windowHeight;
+    let query = wx.createSelectorQuery();
+    query
+      .select('.top-box')
+      .boundingClientRect()
+      .exec(function(res) {
+        that.windowHeight = windowHeight - res[0].height;
+      });
+    that.StaffGetCustomerList();
+  }
 }
 </script>

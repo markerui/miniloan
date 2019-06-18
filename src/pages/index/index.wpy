@@ -113,7 +113,7 @@ each(@setcolor, {
     </van-row>
     <block wx:if="{{userType == 1}}">
       <van-row>
-        <van-col span="12" class="c c1"  data-url="../order/index" @tap="onGoPage">
+        <van-col span="12" class="c c1"  data-url="../order/index?regionName={{userInfo.regionName}}&name={{userInfo.name}}" @tap="onGoPage">
           <van-icon name="add-o" size="250px"/>我要开单
         </van-col>
         <van-col span="12" class="c c2"  data-url="../record/sale" @tap="onGoPage">
@@ -143,7 +143,7 @@ each(@setcolor, {
       </van-col>
     </van-row>
     <view class="{{isIpx ? 'isIpx fixed-bottom' : 'fixed-bottom'}}">
-      <van-button type="danger" size="large">切换登录</van-button>
+      <van-button type="danger" size="large" @tap="onLogout">切换登录</van-button>
     </view>
     <van-toast id="van-toast"/>
     <van-dialog id="van-dialog"/>
@@ -185,6 +185,12 @@ export default class Index extends wepy.page {
       var url = e.currentTarget.dataset.url;
       wx.navigateTo({
         url: url
+      });
+    },
+    onLogout(){
+      wx.clearStorage();
+      wx.reLaunch({
+        url: '../login'
       });
     }
   };

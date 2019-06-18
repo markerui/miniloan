@@ -88,9 +88,9 @@ export default class Login extends wepy.page {
 
   data = {
     loginInfo: {
-      type: 2,
-      username: '13666666666',
-      pwd: '666666'
+      type: 1,
+      username: '13612321689',
+      pwd: '321689'
     }
   };
 

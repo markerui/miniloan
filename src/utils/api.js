@@ -117,6 +117,71 @@ function StaffGetUserInfo(cb) {
   });
 }
 
+//获取客户列表
+function StaffGetCustomerList(data, cb) {
+  GetData('Staff/GetCustomerList', data, function (res) {
+    if (cb) {
+      cb(res)
+    }
+  });
+}
+
+//获取商品列表
+function StaffGetProductList(data, cb) {
+  GetData('Staff/GetProductList', data, function (res) {
+    if (cb) {
+      cb(res)
+    }
+  });
+}
+
+//创建订单
+function StaffCreateOrder(cb) {
+  PostData('Staff/CreateOrder', '', function (res) {
+    if (cb) {
+      cb(res)
+    }
+  });
+}
+
+//获取销售记录
+function StaffGetOrderList(data, cb) {
+  GetData('Staff/GetOrderList', data, function (res) {
+    if (cb) {
+      cb(res)
+    }
+  });
+}
+
+//获取销售详情
+function StaffGetOrderInfo(data, cb) {
+  GetData('Staff/GetOrderInfo', data, function (res) {
+    if (cb) {
+      cb(res)
+    }
+  });
+}
+
+//修改订单状态
+function StaffSetOrderStatus(data, cb) {
+  PostData('Staff/SetOrderStatus', data, function (res) {
+    if (cb) {
+      cb(res)
+    }
+  });
+}
+
+//修改密码
+function StaffChangePwd(data,cb){
+  PostData('Staff/ChangePwd', data, function (res) {
+    if (cb) {
+      cb(res)
+    }
+  });
+}
+
+// 货主——————————————————————————————————————————————————
+
 //获取货主个人信息接口
 function OwnerGetUserInfo(cb) {
   GetData('Owner/GetUserInfo', '', function (res) {
@@ -136,6 +201,15 @@ function OwnerGetSaleList(data, cb) {
   });
 }
 
+//我的销售详情
+function OwnerGetSaleInfo(data, cb){
+  GetData('Owner/GetSaleInfo', data, function (res) {
+    if (cb) {
+      cb(res)
+    }
+  });
+}
+
 //我的支出
 function OwnerGetExpenseList(data, cb) {
   GetData('Owner/GetExpenseList', data, function (res) {
@@ -145,7 +219,23 @@ function OwnerGetExpenseList(data, cb) {
   });
 }
 
+//货主结算记录
+function OwnerGetSettlementList(data,cb){
+  GetData('Owner/GetSettlementList', data, function (res) {
+    if (cb) {
+      cb(res)
+    }
+  });
+}
 
+//修改货主密码
+function OwnerChangePwd(data,cb){
+  PostData('Owner/ChangePwd', data, function (res) {
+    if (cb) {
+      cb(res)
+    }
+  });
+}
 
 
 
@@ -155,7 +245,17 @@ module.exports = {
   Login: Login,
   getUserInfo: getUserInfo,
   StaffGetUserInfo: StaffGetUserInfo,
+  StaffGetCustomerList: StaffGetCustomerList,
+  StaffGetProductList: StaffGetProductList,
+  StaffCreateOrder: StaffCreateOrder,
+  StaffGetOrderList: StaffGetOrderList,
+  StaffGetOrderInfo: StaffGetOrderInfo,
+  StaffSetOrderStatus: StaffSetOrderStatus,
+  StaffChangePwd: StaffChangePwd,
   OwnerGetUserInfo: OwnerGetUserInfo,
   OwnerGetSaleList: OwnerGetSaleList,
-  OwnerGetExpenseList: OwnerGetExpenseList
+  OwnerGetSaleInfo: OwnerGetSaleInfo,
+  OwnerGetExpenseList: OwnerGetExpenseList,
+  OwnerGetSettlementList: OwnerGetSettlementList,
+  OwnerChangePwd: OwnerChangePwd
 };

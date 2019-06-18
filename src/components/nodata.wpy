@@ -1,0 +1,33 @@
+<style lang="less">
+.nodata{
+    text-align: center;
+    color: #999;
+    padding: 30px;
+    text{
+        font-size: 14px;
+        display: block;
+    }
+}
+</style>
+
+<template lang="wxml">
+    <view class="nodata">
+        <van-icon name="flower-o" size="32px" />
+        <text>暂无数据</text>
+    </view>
+</template>
+
+<script>
+import wepy from 'wepy';
+
+export default class nodata extends wepy.component {
+  props = {};
+  
+  data = {};
+  
+  methods = {};
+
+  events = {};
+}
+</script>
+

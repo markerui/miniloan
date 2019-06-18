@@ -31,57 +31,46 @@
 
 <template>
   <view>
-    <van-panel title="批号" status="1906061203041026">
+    <van-panel title="批号" status="{{resultData.productInfo.batchNum}}">
       <van-cell-group>
-        <van-cell title="商品名称" value="蓝莓"/>
+        <van-cell title="商品名称" value="{{resultData.productInfo.productName}}"/>
       </van-cell-group>
     </van-panel>
     <text class="van-block__title">详细信息</text>
-    <view style="padding-bottom:10px">
-      <van-panel custom-class="goods_list">
-        <van-cell-group>
-          <van-cell title="即墨销售部" value="李杨杨"/>
-          <van-cell>
-            <view slot="title">
-              <van-card>
-                <view slot="bottom" class="desc">
-                  <text class="price">2.00</text>
-                  <text>x10</text>
-                  <text>(件)</text>
-                </view>
-              </van-card>
-            </view>
-          </van-cell>
-          <van-cell title="金额" value="￥1200"/>
-          <van-cell title="时间" value="2019-05-02 01:22:22"/>
-        </van-cell-group>
-      </van-panel>
-    </view>
-    <view style="padding-bottom:10px">
-      <van-panel custom-class="goods_list">
-        <van-cell-group>
-          <van-cell title="即墨销售部" value="李杨杨"/>
-          <van-cell>
-            <view slot="title">
-              <van-card>
-                <view slot="bottom" class="desc">
-                  <text class="price">2.00</text>
-                  <text>x10</text>
-                  <text>(件)</text>
-                </view>
-              </van-card>
-            </view>
-          </van-cell>
-          <van-cell title="金额" value="￥1200"/>
-          <van-cell title="时间" value="2019-05-02 01:22:22"/>
-        </van-cell-group>
-      </van-panel>
-    </view>
+
+    <repeat for="{{resultData.saleList}}" key="index" index="index" item="item">
+      <view style="padding-bottom:10px">
+        <van-panel custom-class="goods_list">
+          <van-cell-group>
+            <van-cell title="{{item.regionName}}" value="{{item.staffName}}"/>
+            <van-cell>
+              <view slot="title">
+                <van-card>
+                  <view slot="bottom" class="desc">
+                    <text class="price">{{item.unitPrice}}</text>
+                    <text>x  {{item.value}}</text>
+                    <text>({{item.unit}})</text>
+                  </view>
+                </van-card>
+              </view>
+            </van-cell>
+            <van-cell title="金额" value="￥{{item.subtotal}}"/>
+            <van-cell title="时间" value="{{item.createTime}}"/>
+          </van-cell-group>
+        </van-panel>
+      </view>
+    </repeat>
+
+    <van-toast id="van-toast"/>
+    <van-dialog id="van-dialog"/>
   </view>
 </template>
 
 <script>
 import wepy from 'wepy';
+import Api from '../../utils/api';
+import Toast from '../../components/vant/toast/toast';
+import Dialog from '../../components/vant/dialog/dialog';
 
 export default class MySaleDetails extends wepy.page {
   config = {
@@ -91,13 +80,20 @@ export default class MySaleDetails extends wepy.page {
       'van-cell': '../../components/vant/cell/index',
       'van-cell-group': '../../components/vant/cell-group/index',
       'van-card': '../../components/vant/card/index',
-      'van-panel': '../../components/vant/panel/index'
+      'van-panel': '../../components/vant/panel/index',
+      'van-toast': '../../components/vant/toast/index',
+      'van-dialog': '../../components/vant/dialog/index'
     }
   };
 
   components = {};
 
-  data = {};
+  data = {
+    QueryData: {
+      productId: 0,
+    },
+    resultData: []
+  };
 
   computed = {};
 
@@ -105,6 +101,19 @@ export default class MySaleDetails extends wepy.page {
 
   events = {};
 
-  onLoad() {}
+  OwnerGetSaleInfo(){
+    var that = this;
+    Api.OwnerGetSaleInfo(that.QueryData,function(res){
+      if (res.result) {
+        that.resultData = res.resultData;
+        that.$apply();
+      }
+    });
+  }
+
+  onLoad(e) {
+    this.QueryData.productId = e.productId;
+    this.OwnerGetSaleInfo();
+  }
 }
 </script>

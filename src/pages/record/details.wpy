@@ -47,67 +47,57 @@
 
         <text class="van-block__title">基础信息</text>
         <van-cell-group>
-            <van-cell title="订单状态" value="已付款"/>
-            <van-cell title="订单号" value="1906061203041026"/>
-            <van-cell title="订单时间" value="2019-06-05 18:30"/>
-            <van-cell title="客户" value="刘健  即墨商超"/>
+            <van-cell title="订单状态" value="{{resultData.orderInfo.orderStatus}}"/>
+            <van-cell title="订单号" value="{{resultData.orderInfo.orderNum}}"/>
+            <van-cell title="订单时间" value="{{resultData.orderInfo.createTime}}"/>
+            <van-cell title="客户" value="{{resultData.orderInfo.customerName}} {{resultData.orderInfo.customerTag}}"/>
         </van-cell-group>
 
         <text class="van-block__title">商品信息</text>
-        <van-panel custom-class="goods_list" title="商品总额" status="￥880">
+        <van-panel custom-class="goods_list" title="商品总额" status="￥{{resultData.orderInfo.totalPrice}}">
+            
             <van-cell-group>
-                <van-cell>
-                    <view slot="title">
-                        <van-card title="商品标题">
-                            <view slot="bottom" class="desc">
-                                <text class="price">2.00</text>
-                                <text>x10</text>
-                                <text>(件)</text>
-                            </view>
-                            <view slot="footer" class="button">
-                                <van-button size="mini" type="warning" plain>删除</van-button>
-                            </view>
-                        </van-card>
-                    </view>
-                </van-cell>
-                <van-cell>
-                    <view slot="title">
-                        <van-card title="商品标题">
-                            <view slot="bottom" class="desc">
-                                <text class="price">2.00</text>
-                                <text>x10</text>
-                                <text>(件)</text>
-                            </view>
-                            <view slot="footer" class="button">
-                                <van-button size="mini" type="warning" plain>删除</van-button>
-                            </view>
-                        </van-card>
-                    </view>
-                </van-cell>
+                <repeat for="{{resultData.orderDetail}}" key="index" index="index" item="item">
+                    <van-cell>
+                        <view slot="title">
+                            <van-card title="{{item.productName}}" desc="商品批号{{item.batchNum}}">
+                                <view slot="bottom" class="desc">
+                                    <text class="price">{{item.unitPrice}}</text>
+                                    <text>x {{item.value}}</text>
+                                    <text>({{item.unit}})</text>
+                                </view>
+                            </van-card>
+                        </view>
+                    </van-cell>
+                </repeat>
             </van-cell-group>
         </van-panel>
         
         <text class="van-block__title">备注信息</text>
         <van-cell-group>
             <van-field
-                value="{{ message }}"
+                value="{{ resultData.orderInfo.intro }}"
                 type="textarea"
                 placeholder="备注信息"
                 autosize
                 readonly
-                clearable
-                autosize
                 border="{{ false }}"
             />
         </van-cell-group>
 
   
 
+        <van-toast id="van-toast"/>
+        <van-dialog id="van-dialog"/>
     </view>
 </template>
 
 <script>
 import wepy from 'wepy';
+import Api from '../../utils/api';
+import util from '../../utils/utils';
+import Toast from '../../components/vant/toast/toast';
+import Dialog from '../../components/vant/dialog/dialog';
 
 export default class Details extends wepy.page {
   config = {
@@ -119,13 +109,18 @@ export default class Details extends wepy.page {
       'van-cell-group': '../../components/vant/cell-group/index',
       'van-card': '../../components/vant/card/index',
       'van-panel': '../../components/vant/panel/index',
+      'van-toast': '../../components/vant/toast/index',
+      'van-dialog': '../../components/vant/dialog/index'
     }
   };
 
   components = {};
 
   data = {
-    message: '备注信息备注信息备注信息备注信息备注信息备注信息备注信息备注信息备注信息备注信息备注信息备注信息备注信息备注信息'
+    QueryData: {
+        orderNum: 0,
+    },
+    resultData: []
   };
 
   computed = {};
@@ -134,6 +129,20 @@ export default class Details extends wepy.page {
 
   events = {};
 
-  onLoad() {}
+  StaffGetOrderInfo() {
+        var that = this;
+        Api.StaffGetOrderInfo(that.QueryData, function(res) {
+            if (res.result) {
+                res.resultData.orderInfo.orderStatus = util.setStatus(res.resultData.orderInfo.orderStatus);
+                that.resultData = res.resultData;
+                that.$apply();
+            }
+        });
+    }
+
+  onLoad(e) {
+      this.QueryData.orderNum = e.orderNum;
+      this.StaffGetOrderInfo();
+  }
 }
 </script>

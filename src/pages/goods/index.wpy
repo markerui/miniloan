@@ -12,13 +12,22 @@
 
 <template>
   <view>
-    <van-search placeholder="请输入货主或商品名称"/>
-    <view style="padding-top:10px;">
-      <van-cell-group>
-        <van-cell title="红蛇果" value="李三" size="large" label="批号1906061234561388"/>
-        <van-cell title="红蛇果" value="李三" size="large" label="批号1906061234561388"/>
-      </van-cell-group>
+    <view class="top-box">
+      <van-search placeholder="请输入货主或商品名称" @search="onSearch"/>
     </view>
+    <scroll-view scroll-y style="height: {{windowHeight}}px; padding-top:10px;" bindscrolltolower="scrollLower">
+      <block wx:if="{{resultData.dataList.length>0}}">
+      <van-cell-group>
+        <repeat for="{{resultData.dataList}}" key="index" index="index" item="item">
+          <van-cell title="{{item.productName}}" value="{{item.ownerName}}" size="large" label="批号{{item.batchNum}}"/>
+        </repeat>
+      </van-cell-group>
+      </block>
+      <block wx:else>
+          <nodata></nodata>
+      </block>
+    </scroll-view>
+
     <van-dialog
       use-slot
       show="{{ show }}"
@@ -65,12 +74,19 @@
         </van-radio-group>
       </view>
     </van-dialog>
+
+    <van-toast id="van-toast"/>
+    <van-dialog id="van-dialog"/>
+
   </view>
 </template>
 
 <script>
 import wepy from 'wepy';
-// import Dialog from '../../components/vant/dialog/dialog';
+import Api from '../../utils/api';
+import Toast from '../../components/vant/toast/toast';
+import Dialog from '../../components/vant/dialog/dialog';
+import noData from '../../components/nodata';
 
 export default class GoodsIndex extends wepy.page {
   config = {
@@ -82,22 +98,84 @@ export default class GoodsIndex extends wepy.page {
       'van-dialog': '../../components/vant/dialog/index',
       'van-field': '../../components/vant/field/index',
       'van-radio': '../../components/vant/radio/index',
-      'van-radio-group': '../../components/vant/radio-group/index'
+      'van-radio-group': '../../components/vant/radio-group/index',
+      'van-toast': '../../components/vant/toast/index',
+      "van-icon": "../../components/vant/icon/index"
     }
   };
 
-  components = {};
+  components = {
+    nodata: noData
+  };
 
   data = {
-    show: true
+    windowHeight: 0,
+    hasNextPage: true,
+    show: false,
+    QueryData: {
+      pageIndex: 1,
+      pageSize: 10,
+      keyword: ''
+    },
+    resultData: {
+      dataList: []
+    }
   };
 
   computed = {};
 
-  methods = {};
+  methods = {
+    onSearch(e) {
+      this.QueryData.keyword = e.detail;
+      this.QueryData.pageIndex = 1;
+      this.hasNextPage = true;
+      this.resultData.dataList = [];
+      this.StaffGetProductList();
+    },
+    scrollLower(){
+      this.StaffGetProductList();
+    }
+  };
 
   events = {};
 
-  onLoad() {}
+  StaffGetProductList(){
+    var that = this;
+    var result = that.resultData.dataList;
+    if(that.hasNextPage){
+      Toast.loading({
+        message: '加载中...',
+      });
+      Api.StaffGetProductList(that.QueryData,function(res){
+        Toast.clear();
+        if (res.result) {
+          that.resultData.dataList = result.concat(res.resultData.dataList);
+          that.hasNextPage = res.resultData.hasNextPage;
+          that.QueryData.pageIndex += 1;
+          that.$apply();
+        }
+      });
+    }else{
+      Toast({
+        position: 'bottom',
+        message: '没有更多数据了',
+        duration: 1000
+      });
+    }
+  }
+
+  onLoad() {
+    let that = this;
+    let windowHeight = wx.getSystemInfoSync().windowHeight;
+    let query = wx.createSelectorQuery();
+    query
+      .select('.top-box')
+      .boundingClientRect()
+      .exec(function(res) {
+        that.windowHeight = windowHeight - res[0].height;
+      });
+
+    that.StaffGetProductList();
+  }
 }
 </script>

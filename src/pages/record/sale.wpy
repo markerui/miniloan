@@ -6,56 +6,63 @@
 
 <template>
     <view>
-        <van-search placeholder="请输入订单号或客户姓名"/>
-        <view style="padding-bottom: 15px;">
-            <text class="van-block__title">筛选时间</text>
-            <van-tabs type="card">
-                <van-tab title="今日"></van-tab>
-                <van-tab title="昨日"></van-tab>
-                <van-tab title="本月"></van-tab>
-                <van-tab title="上月"></van-tab>
-            </van-tabs>
-            <text class="van-block__title">筛选状态</text>
-            <van-tabs type="card">
-                <van-tab title="全部"></van-tab>
-                <van-tab title="待付款"></van-tab>
-                <van-tab title="已付款"></van-tab>
-                <van-tab title="已取消"></van-tab>
-            </van-tabs>
+        <view class="top-box">
+            <van-search placeholder="请输入订单号或客户姓名" @search="onSearch"/>
+            <view style="padding-bottom: 15px;">
+                <text class="van-block__title">筛选时间</text>
+                <van-tabs type="card" active="{{ tabsActive }}" @change="onChangeTabs">
+                    <van-tab title="今日"></van-tab>
+                    <van-tab title="昨日"></van-tab>
+                    <van-tab title="本月"></van-tab>
+                    <van-tab title="上月"></van-tab>
+                </van-tabs>
+                <text class="van-block__title">筛选状态</text>
+                <van-tabs type="card" active="{{ tabsStatusActive }}" @change="onChangeStatusTabs">
+                    <van-tab title="全部"></van-tab>
+                    <van-tab title="待付款"></van-tab>
+                    <van-tab title="已付款"></van-tab>
+                    <van-tab title="已取消"></van-tab>
+                </van-tabs>
+            </view>
         </view>
-        <scroll-view scroll-y style="height: 300px;">
-            <view style="padding-top:10px">
-                <van-panel title="订单号1906061203041026" status="已付款" use-footer-slot>
-                    <van-cell-group>
-                        <van-cell title="订单标识" value="1081"/>
-                        <van-cell title="订单时间" value="2019-06-05 18:30"/>
-                        <van-cell title="订单金额" value="￥1200"/>
-                    </van-cell-group>
-                    <view slot="footer" style="text-align: right;">
-                        <van-button size="small">取消</van-button>
-                        <van-button size="small" type="danger">收款</van-button>
+        <scroll-view scroll-y style="height: {{windowHeight}}px;" bindscrolltolower="scrollLower">
+            <block wx:if="{{resultData.dataList.length>0}}">
+                <repeat for="{{resultData.dataList}}" key="index" index="index" item="item">
+                    <view style="padding-top:10px" id="{{item.orderNum}}" @tap="onGoSaleDetails">
+                        <van-panel title="订单号{{item.orderNum}}" status="{{item.orderStatusText}}" use-footer-slot>
+                            <van-cell-group>
+                                <van-cell title="订单标识" value="{{item.id}}"/>
+                                <van-cell title="订单时间" value="{{item.createTime}}"/>
+                                <van-cell title="订单金额" border="{{ false }}" value="￥{{item.totalPrice}}"/>
+                            </van-cell-group>
+                            <block wx:if="{{item.orderStatus == 1}}">
+                                <view slot="footer" style="text-align: right;">
+                                    <van-button size="small" data-status="0" data-orderNum="{{item.orderNum}}" @tap.stop="onSetOrderStatus">取消</van-button>
+                                    <van-button size="small" type="danger"  data-status="1" data-orderNum="{{item.orderNum}}"  @tap.stop="onSetOrderStatus">收款</van-button>
+                                </view>
+                            </block>
+                        </van-panel>
                     </view>
-                </van-panel>
-            </view>
-            <view style="padding-top:10px">
-                <van-panel title="订单号1906061203041026" status="已付款" use-footer-slot>
-                    <van-cell-group>
-                        <van-cell title="订单标识" value="1081"/>
-                        <van-cell title="订单时间" value="2019-06-05 18:30"/>
-                        <van-cell title="订单金额" value="￥1200"/>
-                    </van-cell-group>
-                    <view slot="footer" style="text-align: right;">
-                        <van-button size="small">取消</van-button>
-                        <van-button size="small" type="danger">收款</van-button>
-                    </view>
-                </van-panel>
-            </view>
+                </repeat>
+            </block>
+            <block wx:else>
+                <nodata></nodata>
+            </block>
         </scroll-view>
+
+
+        <van-toast id="van-toast"/>
+        <van-dialog id="van-dialog"/>
     </view>
 </template>
 
 <script>
 import wepy from 'wepy';
+import Api from '../../utils/api';
+import util from '../../utils/utils';
+import Toast from '../../components/vant/toast/toast';
+import Dialog from '../../components/vant/dialog/dialog';
+import noData from '../../components/nodata';
 
 export default class RecordSale extends wepy.page {
   config = {
@@ -67,20 +74,200 @@ export default class RecordSale extends wepy.page {
       'van-panel': '../../components/vant/panel/index',
       'van-button': '../../components/vant/button/index',
       'van-cell': '../../components/vant/cell/index',
-      'van-cell-group': '../../components/vant/cell-group/index'
+      'van-cell-group': '../../components/vant/cell-group/index',
+      'van-toast': '../../components/vant/toast/index',
+      'van-dialog': '../../components/vant/dialog/index',
+      "van-icon": "../../components/vant/icon/index"
     }
   };
 
-  components = {};
+  components = {
+    nodata: noData
+  };
 
-  data = {};
+  data = {
+    windowHeight: 0,
+    hasNextPage: true,
+    QueryData: {
+      date: 'today',
+      status: 0,
+      pageIndex: 1,
+      pageSize: 10,
+      keyword: ''
+    },
+    tabsActive: 0,
+    tabsStatusActive: 0,
+    resultData: {
+        dataList: []
+    }
+  };
 
-  computed = {};
+  watch = {
+    tabsActive(newValue, oldValue) {
+      switch (newValue) {
+        case 0:
+          this.QueryData.date = 'today';
+          break;
+        case 1:
+          this.QueryData.date = 'yday';
+          break;
+        case 2:
+          this.QueryData.date = 'tmontgh';
+          break;
+        case 3:
+          this.QueryData.date = 'lmonth';
+          break;
+        default:
+          break;
+      }
+      this.QueryData.keyword = '';
+      this.QueryData.pageIndex = 1;
+      this.hasNextPage = true;
+      this.resultData.dataList = [];
+      this.StaffGetOrderList();
+    },
 
-  methods = {};
+    tabsStatusActive(newValue, oldValue) {
+      switch (newValue) {
+        case 0:
+          this.QueryData.status = '0';
+          break;
+        case 1:
+          this.QueryData.status = '1';
+          break;
+        case 2:
+          this.QueryData.status = '3';
+          break;
+        case 3:
+          this.QueryData.status = '5';
+          break;
+        default:
+          break;
+      }
+      this.QueryData.keyword = '';
+      this.QueryData.pageIndex = 1;
+      this.hasNextPage = true;
+      this.resultData.dataList = [];
+      this.StaffGetOrderList();
+    }
+  };
+
+  computed = {
+  };
+
+  methods = {
+    onChangeTabs(event) {
+        this.tabsActive = event.detail.index;
+    },
+    onChangeStatusTabs(event) {
+        this.tabsStatusActive = event.detail.index;
+    },
+    onSearch(e) {
+      this.QueryData.keyword = e.detail;
+      this.QueryData.pageIndex = 1;
+      this.hasNextPage = true;
+      this.resultData.dataList = [];
+      this.StaffGetOrderList();
+    },
+    onSetOrderStatus(e){
+        var orderNum = e.currentTarget.dataset.ordernum;
+        var status = e.currentTarget.dataset.status;
+        if(status){
+            Dialog.confirm({
+                title: '提示',
+                message: '确认收款操作吗?'
+            }).then(() => {
+                this.StaffSetOrderStatus(orderNum,status);
+            });
+        }else{
+            Dialog.confirm({
+                title: '提示',
+                message: '确认取消操作吗?'
+            }).then(() => {
+                this.StaffSetOrderStatus(orderNum,status);
+            });
+        }
+    },
+    onGoSaleDetails(e){
+      wx.navigateTo({
+        url: 'details?orderNum='+e.currentTarget.id
+      });
+    },
+    scrollLower(){
+      this.StaffGetOrderList();
+    }
+  };
 
   events = {};
 
-  onLoad() {}
+    StaffGetOrderList() {
+        var that = this;
+        var result = that.resultData.dataList;
+        if(that.hasNextPage){
+            Toast.loading({
+                message: '加载中...',
+            });
+            Api.StaffGetOrderList(that.QueryData,function(res){
+                Toast.clear();
+                if (res.result) {
+                    res.resultData.dataList.map((item) => {
+                        item.orderStatusText = util.setStatus(item.orderStatus);
+                    });
+                    that.resultData.dataList = result.concat(res.resultData.dataList);
+                    that.hasNextPage = res.resultData.hasNextPage;
+                    that.QueryData.pageIndex += 1;
+                    that.$apply();
+                }
+            });
+        }else{
+            Toast({
+                position: 'bottom',
+                message: '没有更多数据了',
+                duration: 1000
+            });
+        }
+    }
+
+
+    StaffSetOrderStatus(orderNum,status){
+        var that = this;
+        var setOrderStatusQueryData = {
+            orderNum: orderNum,
+            status: status
+        };
+        Api.StaffSetOrderStatus(setOrderStatusQueryData, function(res) {
+            if (res.result) {
+                Dialog.alert({
+                    title: '提示',
+                    message: res.message
+                }).then(() => {
+                    that.StaffGetOrderList();
+                });
+            }else{
+                Dialog.alert({
+                    title: '提示',
+                    message: res.message
+                });
+            }
+        });
+    }
+
+
+    
+
+  onLoad() {
+
+    let that = this;
+    let windowHeight = wx.getSystemInfoSync().windowHeight;
+    let query = wx.createSelectorQuery();
+    query
+      .select('.top-box')
+      .boundingClientRect()
+      .exec(function(res) {
+        that.windowHeight = windowHeight - res[0].height;
+      });
+
+      that.StaffGetOrderList();
+  }
 }
 </script>

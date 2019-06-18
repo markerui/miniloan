@@ -4,56 +4,76 @@
 <template>
   <view>
 
-    <van-row>
-      <van-col span="10">
-        <van-field value="开始时间" readonly/>
-      </van-col>
-      <van-col span="4">
-        <van-field value="至" readonly/>
-      </van-col>
-      <van-col span="10">
-        <van-field value="结束时间" readonly/>
-      </van-col>
-    </van-row>
+    <view class="top-box">
+      <van-row>
+        <van-col span="10" @tap="onCheckStartDate">
+          <van-field value="{{ QueryData.startDate }}" readonly/>
+        </van-col>
+        <van-col span="4">
+          <van-field value="至" readonly/>
+        </van-col>
+        <van-col span="10" @tap="onCheckEndDate">
+          <van-field value="{{ QueryData.endDate }}" readonly/>
+        </van-col>
+      </van-row>
+    </view>
     
-    <scroll-view scroll-y style="height: 300px;">
+    <scroll-view scroll-y style="height: {{windowHeight}}px;" bindscrolltolower="scrollLower">
+        <block wx:if="{{resultData.dataList.length>0}}">
+          <repeat for="{{resultData.dataList}}" key="index" index="index" item="item">
             <view style="padding-top:10px">
-                <van-panel title="订单号"  status="1906061203041026">
+                <van-panel title="订单号"  status="{{item.batchNum}}">
                     <van-cell-group>
-                        <van-cell title="结算金额" value="1081"/>
-                        <van-cell title="结算日期" value="2019-06-05 18:30"/>
+                        <van-cell title="商品名称" value="{{item.productName}}"/>
+                        <van-cell title="结算金额" value="￥{{item.amount}}"/>
+                        <van-cell title="结算日期" value="{{item.createTime}}"/>
                     </van-cell-group>
                 </van-panel>
             </view>
-            <view style="padding-top:10px">
-                <van-panel title="订单号"  status="1906061203041026">
-                    <van-cell-group>
-                        <van-cell title="结算金额" value="1081"/>
-                        <van-cell title="结算日期" value="2019-06-05 18:30"/>
-                    </van-cell-group>
-                </van-panel>
-            </view>
-        </scroll-view>
+          </repeat>
+        </block>
+        <block wx:else>
+            <nodata></nodata>
+        </block>
+    </scroll-view>
 
     <van-popup
-      show="{{ show }}"
-      position="top"
-      overlay="{{ false }}"
-      bind:close="onClose"
+      show="{{ startDateShow }}"
+      position="bottom"
+      overlay="{{ true }}"
     >
       <van-datetime-picker
           type="date"
-          value="{{ currentDate }}"
-          bind:input="onInput"
-          formatter="{{ formatter }}"
+          value="{{ startDate }}"
+          @confirm="onStartConfirm"
+          @cancel="onCancelPopup"
         />
     </van-popup>
+    <van-popup
+      show="{{ endDateShow }}"
+      position="bottom"
+      overlay="{{ true }}"
+    >
+      <van-datetime-picker
+          type="date"
+          value="{{ endDate }}"
+          @confirm="onEndConfirm"
+          @cancel="onCancelPopup"
+        />
+    </van-popup>
+    <van-toast id="van-toast"/>
+    <van-dialog id="van-dialog"/>
     
   </view>
 </template>
 
 <script>
 import wepy from 'wepy';
+import Api from '../../utils/api';
+import util from '../../utils/utils';
+import Toast from '../../components/vant/toast/toast';
+import Dialog from '../../components/vant/dialog/dialog';
+import noData from '../../components/nodata';
 
 export default class RecordSettle extends wepy.page {
   config = {
@@ -67,30 +87,109 @@ export default class RecordSettle extends wepy.page {
       'van-datetime-picker': '../../components/vant/datetime-picker/index',
       "van-popup": "../../components/vant/popup/index",
       'van-panel': '../../components/vant/panel/index',
+      'van-toast': '../../components/vant/toast/index',
+      'van-dialog': '../../components/vant/dialog/index',
+      "van-icon": "../../components/vant/icon/index"
     }
   };
 
-  components = {};
+  components = {
+    nodata: noData
+  };
 
   data = {
-    currentDate: new Date().getTime(),
+    windowHeight: 0,
+    hasNextPage: true,
+    startDateShow: false,
+    endDateShow: false,
     minDate: new Date().getTime(),
-    formatter(type, value) {
-      if (type === 'year') {
-        return `${value}年`;
-      } else if (type === 'month') {
-        return `${value}月`;
-      }
-      return value;
+    startDate: new Date().getTime(),
+    endDate: new Date().getTime(),
+    QueryData: {
+      startDate: util.formatTime(new Date().getTime()),
+      endDate: util.formatTime(new Date().getTime()),
+      pageIndex: 1,
+      pageSize: 10,
+    },
+    resultData: {
+      dataList: []
     }
   };
 
-  computed = {};
+  computed = {
+  };
 
-  methods = {};
+  methods = {
+    onCheckStartDate(){
+      this.startDateShow = true;
+    },
+    onCheckEndDate(){
+      this.endDateShow = true;
+    },
+    onCancelPopup(){
+      this.startDateShow = false;
+      this.endDateShow = false;
+    },
+    onStartConfirm(e){
+      this.QueryData.startDate = util.formatTime(e.detail);
+      this.startDateShow = false;
+      this.QueryData.pageIndex = 1;
+      this.hasNextPage = true;
+      this.resultData.dataList = [];
+      this.OwnerGetSettlementList();
+    },
+    onEndConfirm(e){
+      this.QueryData.endDate = util.formatTime(e.detail);
+      this.endDateShow = false;
+      this.QueryData.pageIndex = 1;
+      this.hasNextPage = true;
+      this.resultData.dataList = [];
+      this.OwnerGetSettlementList();
+    },
+    scrollLower(){
+      this.OwnerGetSettlementList();
+    }
+  };
 
   events = {};
 
-  onLoad() {}
+  OwnerGetSettlementList(){
+    var that = this;
+    var result = that.resultData.dataList;
+    if(that.hasNextPage){
+      Toast.loading({
+        message: '加载中...',
+      });
+      Api.OwnerGetSettlementList(that.QueryData,function(res){
+        Toast.clear();
+        if (res.result) {
+          that.resultData.dataList = result.concat(res.resultData.dataList);
+          that.hasNextPage = res.resultData.hasNextPage;
+          that.QueryData.pageIndex += 1;
+          that.$apply();
+        }
+      });
+    }else{
+      Toast({
+        position: 'bottom',
+        message: '没有更多数据了',
+        duration: 1000
+      });
+    }
+  }
+
+  onLoad() {
+    let that = this;
+    let windowHeight = wx.getSystemInfoSync().windowHeight;
+    let query = wx.createSelectorQuery();
+    query
+      .select('.top-box')
+      .boundingClientRect()
+      .exec(function(res) {
+        that.windowHeight = windowHeight - res[0].height;
+      });
+
+    that.OwnerGetSettlementList();
+  }
 }
 </script>
