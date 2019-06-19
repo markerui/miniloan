@@ -198,6 +198,7 @@ export default class GoodsIndex extends wepy.page {
           title: '提示',
           message: '请根据需求正确填写'
         });
+        return false;
       }
       if (this.inputData.Packages == '') {
         this.inputData.Packages = 0;

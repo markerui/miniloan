@@ -49,7 +49,7 @@
         <van-cell-group>
             <van-cell title="部门" value="{{userInfo.regionName}}"/>
             <van-cell title="客户" value="{{clientInfo.name}} {{clientInfo.tag}}" url="../client/index" is-link/>
-            <van-cell title="商品" value="已选择{{ProductList.length}}种" url="../goods/index" is-link/>
+            <van-cell title="商品" url="../goods/index" is-link/>
         </van-cell-group>
 
         <text class="van-block__title">商品信息</text>
