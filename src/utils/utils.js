@@ -11,23 +11,34 @@ function formatNumber(n) {
   return n[1] ? n : '0' + n
 }
 
-function setStatus(value){
+function setStatus(value) {
   switch (value) {
-      case 1:
-          return '待收款';
-          break;
-      case 3:
-          return '已付款';
-          break;
-      case 5:
-          return '已取消';
-          break;
-      default:
-          break;
+    case 1:
+      return '待收款';
+      break;
+    case 3:
+      return '已付款';
+      break;
+    case 5:
+      return '已取消';
+      break;
+    default:
+      break;
   }
+}
+
+
+function returnProductIndex(arr, value) {
+  for (var i = 0; i < arr.length; i++) {
+    if (arr[i]['ProductID'] == value) {
+      return i;
+    }
+  }
+  return -1;
 }
 
 module.exports = {
   formatTime: formatTime,
-  setStatus: setStatus 
+  setStatus: setStatus,
+  returnProductIndex: returnProductIndex
 }

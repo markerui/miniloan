@@ -74,7 +74,31 @@ function Login(data, cb) {
   });
 }
 
-//微信code登录
+//获取sessionkey
+function authGetSessionKey(cb) {
+  wx.login({
+    success(res) {
+      if (res.code) {
+        var Data = {
+          code: res.code
+        };
+        PostData('auth/GetSessionKey', Data, function (res) {
+          if (cb) {
+            cb(res)
+          }
+        });
+      } else {
+        wx.showModal({
+          title: '提示',
+          content: '获取!',
+          showCancel: false
+        });
+      }
+    }
+  });
+}
+
+//一键微信登录
 function wxLogin(cb) {
   wx.login({
     success(res) {
@@ -82,7 +106,7 @@ function wxLogin(cb) {
         var Data = {
           code: res.code
         };
-        Login(Data, function (res) {
+        PostData('auth/WXLogin', Data, function (res) {
           wx.setStorageSync('tokenId', res.resultData.tokenId);
           if (cb) {
             cb(res)
@@ -98,6 +122,10 @@ function wxLogin(cb) {
     }
   });
 }
+
+
+
+
 
 //登录授权
 function getUserInfo(data, cb) {
@@ -136,8 +164,8 @@ function StaffGetProductList(data, cb) {
 }
 
 //创建订单
-function StaffCreateOrder(cb) {
-  PostData('Staff/CreateOrder', '', function (res) {
+function StaffCreateOrder(data, cb) {
+  PostData('Staff/CreateOrder', data, function (res) {
     if (cb) {
       cb(res)
     }
@@ -172,7 +200,7 @@ function StaffSetOrderStatus(data, cb) {
 }
 
 //修改密码
-function StaffChangePwd(data,cb){
+function StaffChangePwd(data, cb) {
   PostData('Staff/ChangePwd', data, function (res) {
     if (cb) {
       cb(res)
@@ -202,7 +230,7 @@ function OwnerGetSaleList(data, cb) {
 }
 
 //我的销售详情
-function OwnerGetSaleInfo(data, cb){
+function OwnerGetSaleInfo(data, cb) {
   GetData('Owner/GetSaleInfo', data, function (res) {
     if (cb) {
       cb(res)
@@ -220,7 +248,7 @@ function OwnerGetExpenseList(data, cb) {
 }
 
 //货主结算记录
-function OwnerGetSettlementList(data,cb){
+function OwnerGetSettlementList(data, cb) {
   GetData('Owner/GetSettlementList', data, function (res) {
     if (cb) {
       cb(res)
@@ -229,7 +257,7 @@ function OwnerGetSettlementList(data,cb){
 }
 
 //修改货主密码
-function OwnerChangePwd(data,cb){
+function OwnerChangePwd(data, cb) {
   PostData('Owner/ChangePwd', data, function (res) {
     if (cb) {
       cb(res)
@@ -243,6 +271,8 @@ module.exports = {
   HOST_URI: HOST_URI,
   API_URL: API_URL,
   Login: Login,
+  wxLogin: wxLogin,
+  authGetSessionKey: authGetSessionKey,
   getUserInfo: getUserInfo,
   StaffGetUserInfo: StaffGetUserInfo,
   StaffGetCustomerList: StaffGetCustomerList,

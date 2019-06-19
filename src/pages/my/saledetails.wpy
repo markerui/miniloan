@@ -37,7 +37,6 @@
       </van-cell-group>
     </van-panel>
     <text class="van-block__title">详细信息</text>
-
     <repeat for="{{resultData.saleList}}" key="index" index="index" item="item">
       <view style="padding-bottom:10px">
         <van-panel custom-class="goods_list">
@@ -48,7 +47,7 @@
                 <van-card>
                   <view slot="bottom" class="desc">
                     <text class="price">{{item.unitPrice}}</text>
-                    <text>x  {{item.value}}</text>
+                    <text>x {{item.value}}</text>
                     <text>({{item.unit}})</text>
                   </view>
                 </van-card>
@@ -60,7 +59,6 @@
         </van-panel>
       </view>
     </repeat>
-
     <van-toast id="van-toast"/>
     <van-dialog id="van-dialog"/>
   </view>
@@ -90,7 +88,7 @@ export default class MySaleDetails extends wepy.page {
 
   data = {
     QueryData: {
-      productId: 0,
+      productId: 0
     },
     resultData: []
   };
@@ -101,9 +99,9 @@ export default class MySaleDetails extends wepy.page {
 
   events = {};
 
-  OwnerGetSaleInfo(){
+  OwnerGetSaleInfo() {
     var that = this;
-    Api.OwnerGetSaleInfo(that.QueryData,function(res){
+    Api.OwnerGetSaleInfo(that.QueryData, function(res) {
       if (res.result) {
         that.resultData = res.resultData;
         that.$apply();

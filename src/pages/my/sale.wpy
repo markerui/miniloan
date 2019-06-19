@@ -7,31 +7,31 @@
 <template>
     <view>
         <view class="top-box">
-          <van-search placeholder="请输入订单号或客户姓名" @search="onSearch"/>
-          <view style="padding-bottom: 15px;">
-              <text class="van-block__title">筛选时间</text>
-              <van-tabs type="card" active="{{ tabsActive }}" @change="onChangeTabs">
-                  <van-tab title="今日"></van-tab>
-                  <van-tab title="昨日"></van-tab>
-                  <van-tab title="本月"></van-tab>
-                  <van-tab title="上月"></van-tab>
-              </van-tabs>
-          </view>
+            <van-search placeholder="请输入订单号或客户姓名" @search="onSearch"/>
+            <view style="padding-bottom: 15px;">
+                <text class="van-block__title">筛选时间</text>
+                <van-tabs type="card" active="{{ tabsActive }}" @change="onChangeTabs">
+                    <van-tab title="今日"></van-tab>
+                    <van-tab title="昨日"></van-tab>
+                    <van-tab title="本月"></van-tab>
+                    <van-tab title="上月"></van-tab>
+                </van-tabs>
+            </view>
         </view>
         <scroll-view scroll-y style="height: {{windowHeight}}px;" bindscrolltolower="scrollLower">
             <block wx:if="{{resultData.dataList.length>0}}">
-            <repeat for="{{resultData.dataList}}" key="index" index="index" item="item">
-                <view style="padding-top:10px" id="{{item.productID}}" @tap="onGoSaleDetails">
-                    <van-panel title="批号" status="{{item.batchNum}}">
-                        <van-cell-group>
-                            <van-cell title="名称" value="{{item.productName}}"/>
-                            <van-cell title="件数" value="{{item.totalPackages}}"/>
-                            <van-cell title="重量" value="{{item.totalWeight}}"/>
-                            <van-cell title="金额" value="￥{{item.totalPrice}}"/>
-                        </van-cell-group>
-                    </van-panel>
-                </view>
-            </repeat>
+                <repeat for="{{resultData.dataList}}" key="index" index="index" item="item">
+                    <view style="padding-top:10px" id="{{item.productID}}" @tap="onGoSaleDetails">
+                        <van-panel title="批号" status="{{item.batchNum}}">
+                            <van-cell-group>
+                                <van-cell title="名称" value="{{item.productName}}"/>
+                                <van-cell title="件数" value="{{item.totalPackages}}"/>
+                                <van-cell title="重量" value="{{item.totalWeight}}"/>
+                                <van-cell title="金额" value="￥{{item.totalPrice}}"/>
+                            </van-cell-group>
+                        </van-panel>
+                    </view>
+                </repeat>
             </block>
             <block wx:else>
                 <nodata></nodata>
@@ -61,7 +61,7 @@ export default class MySale extends wepy.page {
       'van-cell-group': '../../components/vant/cell-group/index',
       'van-toast': '../../components/vant/toast/index',
       'van-dialog': '../../components/vant/dialog/index',
-      "van-icon": "../../components/vant/icon/index"
+      'van-icon': '../../components/vant/icon/index'
     }
   };
 
@@ -120,12 +120,12 @@ export default class MySale extends wepy.page {
       this.resultData.dataList = [];
       this.OwnerGetSaleList();
     },
-    onGoSaleDetails(e){
+    onGoSaleDetails(e) {
       wx.navigateTo({
-        url: 'saledetails?productId='+e.currentTarget.id
+        url: 'saledetails?productId=' + e.currentTarget.id
       });
     },
-    scrollLower(){
+    scrollLower() {
       this.OwnerGetSaleList();
     }
   };
@@ -133,11 +133,11 @@ export default class MySale extends wepy.page {
   OwnerGetSaleList() {
     var that = this;
     var result = that.resultData.dataList;
-    if(that.hasNextPage){
+    if (that.hasNextPage) {
       Toast.loading({
-        message: '加载中...',
+        message: '加载中...'
       });
-      Api.OwnerGetSaleList(that.QueryData,function(res){
+      Api.OwnerGetSaleList(that.QueryData, function(res) {
         Toast.clear();
         if (res.result) {
           that.resultData.dataList = result.concat(res.resultData.dataList);
@@ -146,7 +146,7 @@ export default class MySale extends wepy.page {
           that.$apply();
         }
       });
-    }else{
+    } else {
       Toast({
         position: 'bottom',
         message: '没有更多数据了',

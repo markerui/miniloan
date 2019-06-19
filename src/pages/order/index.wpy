@@ -49,52 +49,67 @@
         <van-cell-group>
             <van-cell title="部门" value="{{userInfo.regionName}}"/>
             <van-cell title="客户" value="{{clientInfo.name}} {{clientInfo.tag}}" url="../client/index" is-link/>
-            <van-cell title="商品" url="../goods/index" is-link/>
+            <van-cell title="商品" value="已选择{{ProductList.length}}种" url="../goods/index" is-link/>
         </van-cell-group>
 
         <text class="van-block__title">商品信息</text>
-        <van-panel custom-class="goods_list" title="商品总额" status="￥880">
+        <van-panel custom-class="goods_list" title="商品总额" status="￥{{totalPrice}}">
             <van-cell-group>
-                <van-cell>
-                    <view slot="title">
-                        <van-card title="商品标题">
-                            <view slot="bottom" class="desc">
-                                <text class="price">2.00</text>
-                                <text>x10</text>
-                                <text>(件)</text>
-                            </view>
-                            <view slot="footer" class="button">
-                                <van-button size="mini" type="warning" plain>删除</van-button>
-                            </view>
-                        </van-card>
-                    </view>
-                </van-cell>
-                
+                <repeat for="{{QueryData.ProductList}}" key="index" index="index" item="item">
+                    <van-cell>
+                        <view slot="title">
+                            <van-card title="{{item.ProductName}}">
+                                <view slot="bottom" class="desc">
+                                    <text class="price">{{item.UnitPrice}}</text>
+                                    <block wx:if="{{item.Packages == 0}}">
+                                        <text>x {{item.Weight}}</text>
+                                        <text>斤</text>
+                                    </block>
+                                    <block wx:if="{{item.Weight == 0}}">
+                                        <text>x {{item.Packages}}</text>
+                                        <text>(件)</text>
+                                    </block>
+                                </view>
+                                <view slot="footer" class="button">
+                                    <van-button size="mini" type="warning" id="{{index}}" plain @tap="onDelectPro">删除</van-button>
+                                </view>
+                            </van-card>
+                        </view>
+                    </van-cell>
+                </repeat>
             </van-cell-group>
         </van-panel>
         
         <text class="van-block__title">备注信息</text>
         <van-cell-group>
             <van-field
-                value="{{ message }}"
+                value="{{ QueryData.Intro }}"
                 type="textarea"
                 placeholder="备注信息"
                 autosize
                 border="{{ false }}"
+                data-name="Intro"  
+                @change="onInput" 
             />
         </van-cell-group>
 
         <van-submit-bar
-            price="{{ 3050 }}"
+            price="{{ totalPrice*100 }}"
             button-text="提交"
             bind:submit="onSubmit"
             />
 
+        <van-toast id="van-toast"/>
+        <van-dialog id="van-dialog"/>
     </view>
 </template>
 
 <script>
 import wepy from 'wepy';
+import Api from '../../utils/api';
+import util from '../../utils/utils';
+import Toast from '../../components/vant/toast/toast';
+import Dialog from '../../components/vant/dialog/dialog';
 
 export default class OrderIndex extends wepy.page {
   config = {
@@ -106,7 +121,9 @@ export default class OrderIndex extends wepy.page {
       'van-cell-group': '../../components/vant/cell-group/index',
       'van-card': '../../components/vant/card/index',
       'van-panel': '../../components/vant/panel/index',
-      "van-submit-bar": "../../components/vant/submit-bar/index"
+      "van-submit-bar": "../../components/vant/submit-bar/index",
+      'van-toast': '../../components/vant/toast/index',
+      'van-dialog': '../../components/vant/dialog/index',
     }
   };
 
@@ -117,14 +134,79 @@ export default class OrderIndex extends wepy.page {
         regionName: '',
         name: ''
     },
-    clientInfo: []
+    clientInfo: [],
+    QueryData: {
+      TotalPrice: 0,
+      CustomerID: 0,
+      Intro: '',
+      ProductList: []
+    },
   };
 
-  computed = {};
+  computed = {
+      totalPrice(){
+        var totalPrice = 0;
+        this.QueryData.ProductList.forEach(function(e) {
+            totalPrice += e.UnitPrice* e.Packages + e.UnitPrice* e.Weight;
+        });
+        this.QueryData.TotalPrice = totalPrice;
+        return totalPrice;
+      }
+  };
 
-  methods = {};
+  methods = {
+      onInput(e){
+        var value = e.detail;
+        var name = e.currentTarget.dataset.name;
+        this.QueryData[name] = value;
+      },
+      onDelectPro(e){
+        var index = e.currentTarget.id;
+        Dialog.confirm({
+            title: '提示',
+            message: '确认删除吗?'
+        }).then(() => {
+            this.QueryData.ProductList.splice(index, 1);
+            wx.setStorage({
+                key: 'productList',
+                data: this.QueryData.ProductList
+            });
+            this.$apply();
+        });
+      },
+      onSubmit(){
+        Dialog.alert({
+            title: '提示',
+            message: '确认无误提交信息吗?'
+        }).then(() => {
+            this.StaffCreateOrder();
+        });   
+      }
+  };
 
   events = {};
+
+    StaffCreateOrder(){
+        var that = this;
+        Api.StaffCreateOrder(that.QueryData,function(res) {
+            if (res.result) {
+                Dialog.alert({
+                    title: '提示',
+                    message: res.message
+                }).then(() => {
+                    wx.navigateBack({
+                        delta: 1
+                    });
+                });  
+                that.$apply();
+            }else{
+                Dialog.alert({
+                    title: '提示',
+                    message: res.message
+                })
+            }
+        });
+    }
 
     onShow(){
         var that = this;
@@ -132,6 +214,14 @@ export default class OrderIndex extends wepy.page {
             key: 'clientInfo',
             success(res) {
                 that.clientInfo = res.data;
+                that.QueryData.CustomerID = res.data.id;
+                that.$apply();
+            }
+        });
+        wx.getStorage({
+            key: 'productList',
+            success(res) {
+                that.QueryData.ProductList = res.data;
                 that.$apply();
             }
         });
@@ -141,6 +231,12 @@ export default class OrderIndex extends wepy.page {
         var that = this;
         that.userInfo.regionName = e.regionName;
         that.userInfo.name = e.name;
+        // wx.removeStorage({
+        //     key: 'clientInfo'
+        // });
+        // wx.removeStorage({
+        //     key: 'productList'
+        // });
     }
 }
 </script>

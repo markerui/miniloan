@@ -15,19 +15,29 @@
     <view class="top-box">
       <van-search placeholder="请输入货主或商品名称" @search="onSearch"/>
     </view>
-    <scroll-view scroll-y style="height: {{windowHeight}}px; padding-top:10px;" bindscrolltolower="scrollLower">
+    <scroll-view
+      scroll-y
+      style="height: {{windowHeight}}px; padding-top:10px;"
+      bindscrolltolower="scrollLower"
+    >
       <block wx:if="{{resultData.dataList.length>0}}">
-      <van-cell-group>
-        <repeat for="{{resultData.dataList}}" key="index" index="index" item="item">
-          <van-cell title="{{item.productName}}" value="{{item.ownerName}}" size="large" label="批号{{item.batchNum}}" id="{{index}}" @tap="onCheckGoods"/>
-        </repeat>
-      </van-cell-group>
+        <van-cell-group>
+          <repeat for="{{resultData.dataList}}" key="index" index="index" item="item">
+            <van-cell
+              title="{{item.productName}}"
+              value="{{item.ownerName}}"
+              size="large"
+              label="批号{{item.batchNum}}"
+              id="{{index}}"
+              @tap="onCheckGoods"
+            />
+          </repeat>
+        </van-cell-group>
       </block>
       <block wx:else>
-          <nodata></nodata>
+        <nodata></nodata>
       </block>
     </scroll-view>
-
     <van-dialog
       use-slot
       show="{{ checkInfoShow }}"
@@ -43,35 +53,49 @@
           <van-field value="{{checkInfo.batchNum}}" label="批号" readonly/>
         </van-cell-group>
         <text class="van-block__title">方式</text>
-        <van-tabs type="card"  active="{{ tabsActive }}" @change="onChangeTabs">
+        <van-tabs type="card" active="{{ tabsActive }}" @change="onChangeTabs">
           <van-tab title="重量(斤)"></van-tab>
           <van-tab title="件"></van-tab>
         </van-tabs>
         <text class="van-block__title">基本信息</text>
         <van-cell-group>
           <block wx:if="{{tabsActive}}">
-            <van-field value="{{inputData.Packages}}" placeholder="件数" label="件数" data-name="Packages"  
-        @change="onInput" />
+            <van-field
+              value="{{inputData.Packages}}"
+              placeholder="件数"
+              label="件数"
+              data-name="Packages"
+              @change="onInput"
+            />
           </block>
           <block wx:else>
-            <van-field value="{{inputData.Weight}}" placeholder="重量" label="重量" data-name="Weight"  
-        @change="onInput" />
+            <van-field
+              value="{{inputData.Weight}}"
+              placeholder="重量"
+              label="重量"
+              data-name="Weight"
+              @change="onInput"
+            />
           </block>
-          <van-field value="{{inputData.Price}}" placeholder="单价" label="单价" data-name="Price"  
-        @change="onInput" />
+          <van-field
+            value="{{inputData.UnitPrice}}"
+            placeholder="单价"
+            label="单价"
+            data-name="UnitPrice"
+            @change="onInput"
+          />
         </van-cell-group>
       </view>
     </van-dialog>
-
     <van-toast id="van-toast"/>
     <van-dialog id="van-dialog"/>
-
   </view>
 </template>
 
 <script>
 import wepy from 'wepy';
 import Api from '../../utils/api';
+import util from '../../utils/utils';
 import Toast from '../../components/vant/toast/toast';
 import Dialog from '../../components/vant/dialog/dialog';
 import noData from '../../components/nodata';
@@ -86,9 +110,9 @@ export default class GoodsIndex extends wepy.page {
       'van-dialog': '../../components/vant/dialog/index',
       'van-field': '../../components/vant/field/index',
       'van-toast': '../../components/vant/toast/index',
-      "van-icon": "../../components/vant/icon/index",
-      "van-tab": "../../components/vant/tab/index",
-      "van-tabs": "../../components/vant/tabs/index"
+      'van-icon': '../../components/vant/icon/index',
+      'van-tab': '../../components/vant/tab/index',
+      'van-tabs': '../../components/vant/tabs/index'
     }
   };
 
@@ -113,22 +137,26 @@ export default class GoodsIndex extends wepy.page {
     ProductList: [],
     inputData: {
       ProductID: 0,
+      ProductName: '',
       Packages: '',
       Weight: '',
-      Price: ''
+      UnitPrice: ''
     }
   };
 
   computed = {};
 
   methods = {
-    onInput(e){
+    onInput(e) {
       var value = e.detail;
       var name = e.currentTarget.dataset.name;
       this.inputData[name] = value;
     },
     onChangeTabs(event) {
       this.tabsActive = event.detail.index;
+      this.inputData.UnitPrice = '';
+      this.inputData.Packages = '';
+      this.inputData.Weight = '';
     },
     onSearch(e) {
       this.QueryData.keyword = e.detail;
@@ -137,56 +165,82 @@ export default class GoodsIndex extends wepy.page {
       this.resultData.dataList = [];
       this.StaffGetProductList();
     },
-    onCheckGoods(e){
+    onCheckGoods(e) {
       var index = e.currentTarget.id;
       this.checkInfoShow = true;
-      this.inputData.Packages = '';
-      this.inputData.Weight = '';
-      this.inputData.Price = '';
       this.inputData.ProductID = this.resultData.dataList[index].id;
+      this.inputData.ProductName = this.resultData.dataList[index].productName;
+      var ProductListindexOf = util.returnProductIndex(
+        this.ProductList,
+        this.inputData.ProductID
+      );
+      if (ProductListindexOf != '-1') {
+        this.inputData.Packages = this.ProductList[ProductListindexOf].Packages;
+        this.inputData.Weight = this.ProductList[ProductListindexOf].Weight;
+        this.inputData.UnitPrice = this.ProductList[
+          ProductListindexOf
+        ].UnitPrice;
+      } else {
+        this.inputData.Packages = '';
+        this.inputData.Weight = '';
+        this.inputData.UnitPrice = '';
+      }
       this.checkInfo = this.resultData.dataList[index];
     },
-    onCloseDialog(){
+    onCloseDialog() {
       this.checkInfoShow = false;
       this.$apply();
     },
-    onConfirmDialog(){
-      var result = this.ProductList;
+    onConfirmDialog() {
       this.checkInfoShow = false;
-      if(this.inputData.Packages == ''){
-          this.inputData.Packages = 0;
+      if (this.inputData.UnitPrice == '') {
+        Dialog.alert({
+          title: '提示',
+          message: '请根据需求正确填写'
+        });
       }
-      if(this.inputData.Weight == ''){
-          this.inputData.Weight = 0;
+      if (this.inputData.Packages == '') {
+        this.inputData.Packages = 0;
       }
-      if(this.inputData.Price == ''){
-          this.inputData.Price = 0;
+      if (this.inputData.Weight == '') {
+        this.inputData.Weight = 0;
       }
-      var inputNewData = {
-        ProductID: 0,
-        Packages: this.inputData.Packages,
-        Weight: this.inputData.Weigh,
-        Price: this.inputData.Price
+      var createArr = [];
+      for (let i in this.inputData) {
+        createArr[i] = this.inputData[i];
       }
-      this.ProductList = result.concat(inputNewData);
-      console.log(this.ProductList)
+      var ProductListindexOf = util.returnProductIndex(
+        this.ProductList,
+        this.inputData.ProductID
+      );
+      if (ProductListindexOf != '-1') {
+        this.ProductList[ProductListindexOf].Packages = createArr['Packages'];
+        this.ProductList[ProductListindexOf].Weight = createArr['Weight'];
+        this.ProductList[ProductListindexOf].UnitPrice = createArr['UnitPrice'];
+      } else {
+        this.ProductList.push({ ...createArr });
+      }
+      wx.setStorage({
+        key: 'productList',
+        data: this.ProductList
+      });
       this.$apply();
     },
-    scrollLower(){
+    scrollLower() {
       this.StaffGetProductList();
     }
   };
 
   events = {};
 
-  StaffGetProductList(){
+  StaffGetProductList() {
     var that = this;
     var result = that.resultData.dataList;
-    if(that.hasNextPage){
+    if (that.hasNextPage) {
       Toast.loading({
-        message: '加载中...',
+        message: '加载中...'
       });
-      Api.StaffGetProductList(that.QueryData,function(res){
+      Api.StaffGetProductList(that.QueryData, function(res) {
         Toast.clear();
         if (res.result) {
           that.resultData.dataList = result.concat(res.resultData.dataList);
@@ -195,7 +249,7 @@ export default class GoodsIndex extends wepy.page {
           that.$apply();
         }
       });
-    }else{
+    } else {
       Toast({
         position: 'bottom',
         message: '没有更多数据了',
@@ -214,6 +268,14 @@ export default class GoodsIndex extends wepy.page {
       .exec(function(res) {
         that.windowHeight = windowHeight - res[0].height;
       });
+
+    wx.getStorage({
+      key: 'productList',
+      success(res) {
+        that.ProductList = res.data;
+        that.$apply();
+      }
+    });
 
     that.StaffGetProductList();
   }

@@ -8,6 +8,16 @@
   font-size: 18px;
   position: relative;
   overflow: hidden;
+  .buttonHide{
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    top: 0;
+    height: 100%;
+    opacity: 0;
+  }
+ 
   &.user-info{
     padding: 0;
     border: none;
@@ -41,6 +51,7 @@
       left: 0;
       opacity: 0.1;
   }
+  
 }
 
 @setcolor: {
@@ -135,8 +146,9 @@ each(@setcolor, {
       </van-row>
     </block>
     <van-row>
-      <van-col span="12" class="c c8" data-url="" @tap="onGoPage">
+      <van-col span="12" class="c c8 bindwx" >
         <van-icon name="chat-o" size="250px"/>绑定微信
+        <van-button custom-class="buttonHide" open-type="getUserInfo" lang="zh_CN" bind:getuserinfo="onGetuserinfo">绑定微信</van-button>
       </van-col>
       <van-col span="12" class="c c9" data-url="../eidtdpassword" @tap="onGoPage">
         <van-icon name="medel-o" size="250px"/>修改密码
@@ -181,6 +193,11 @@ export default class Index extends wepy.page {
   computed = {};
 
   methods = {
+    onGetuserinfo(e){
+      this.authGetSessionKey();
+      var encryptedData = e.detail.encryptedData;
+      var iv = e.detail.iv;
+    },
     onGoPage(e){
       var url = e.currentTarget.dataset.url;
       wx.navigateTo({
@@ -195,8 +212,12 @@ export default class Index extends wepy.page {
     }
   };
 
-  events = {
-    
+  events = {};
+
+  authGetSessionKey(){
+    Api.authGetSessionKey(function(res){
+      console.log(res);
+    });
   };
 
   GetStaffGetUserInfo() {

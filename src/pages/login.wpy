@@ -56,7 +56,7 @@
     <view class="login-btn">
       <van-button type="danger" size="large" @tap="onLogin">马上登录</van-button>
       <text>---OR---</text>
-      <van-button type="primary" size="large">微信授权一键登录</van-button>
+      <van-button type="primary" size="large" @tap="onWxLogin">微信授权一键登录</van-button>
     </view>
     
     <van-toast id="van-toast" />
@@ -90,7 +90,7 @@ export default class Login extends wepy.page {
     loginInfo: {
       type: 1,
       username: '13612321689',
-      pwd: '321689'
+      pwd: '123456'
     }
   };
 
@@ -107,6 +107,9 @@ export default class Login extends wepy.page {
     },
     onLogin(){
       this.login();
+    },
+    onWxLogin(){
+      Api.wxLogin();
     }
   };
 
