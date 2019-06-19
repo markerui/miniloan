@@ -102,6 +102,11 @@ export default class MySaleDetails extends wepy.page {
   OwnerGetSaleInfo() {
     var that = this;
     Api.OwnerGetSaleInfo(that.QueryData, function(res) {
+      if (res.errCode == '1001') {
+        wx.reLaunch({
+          url: '../login'
+        });
+      }
       if (res.result) {
         that.resultData = res.resultData;
         that.$apply();

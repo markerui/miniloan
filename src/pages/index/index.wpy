@@ -187,7 +187,12 @@ export default class Index extends wepy.page {
   data = {
     userType: 0,
     isIpx: false,
-    userInfo: []
+    userInfo: [],
+    BindWeixin: {
+      encryptedData: '',
+      iv: '',
+      openId: ''
+    }
   };
 
   computed = {};
@@ -195,8 +200,8 @@ export default class Index extends wepy.page {
   methods = {
     onGetuserinfo(e){
       this.authGetSessionKey();
-      var encryptedData = e.detail.encryptedData;
-      var iv = e.detail.iv;
+      this.BindWeixin.encryptedData = e.detail.encryptedData;
+      this.BindWeixin.iv = e.detail.iv;
     },
     onGoPage(e){
       var url = e.currentTarget.dataset.url;
@@ -215,10 +220,39 @@ export default class Index extends wepy.page {
   events = {};
 
   authGetSessionKey(){
+    var that = this;
     Api.authGetSessionKey(function(res){
-      console.log(res);
+      that.BindWeixin.openId = res.resultData.openId;
+      if (res.result) {
+        if(that.userType == 1){
+          that.StaffBindWeixin();
+        }
+        if(that.userType == 2){
+          that.OwnerBindWeixin();
+        }
+      }
     });
   };
+
+  StaffBindWeixin(){
+    var that = this;
+    Api.StaffBindWeixin(that.BindWeixin,function(res){
+      Dialog.alert({
+        title: '提示',
+        message: res.message
+      });
+    });
+  }
+
+  OwnerBindWeixin(){
+    var that = this;
+    Api.StaffBindWeixin(that.BindWeixin,function(res){
+      Dialog.alert({
+        title: '提示',
+        message: res.message
+      });
+    });
+  }
 
   GetStaffGetUserInfo() {
     var that = this;

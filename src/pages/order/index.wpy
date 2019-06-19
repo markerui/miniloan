@@ -189,6 +189,11 @@ export default class OrderIndex extends wepy.page {
     StaffCreateOrder(){
         var that = this;
         Api.StaffCreateOrder(that.QueryData,function(res) {
+            if (res.errCode == '1001') {
+                wx.reLaunch({
+                    url: '../login'
+                })
+            }
             if (res.result) {
                 Dialog.alert({
                     title: '提示',

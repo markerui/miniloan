@@ -17,6 +17,11 @@ function Request(options) {
     },
     success: res => {
       var data = res.data;
+      // if (data.errCode == '1001') {
+      //   wx.reLaunch({
+      //     url: 'login'
+      //   })
+      // }
       options.success(data);
       return data;
     },
@@ -107,7 +112,6 @@ function wxLogin(cb) {
           code: res.code
         };
         PostData('auth/WXLogin', Data, function (res) {
-          wx.setStorageSync('tokenId', res.resultData.tokenId);
           if (cb) {
             cb(res)
           }
@@ -265,7 +269,23 @@ function OwnerChangePwd(data, cb) {
   });
 }
 
+//绑定微信1
+function StaffBindWeixin(data, cb) {
+  PostData('Staff/BindWeixin', data, function (res) {
+    if (cb) {
+      cb(res)
+    }
+  });
+}
 
+//绑定微信2
+function OwnerBindWeixin(data, cb) {
+  PostData('Owner/BindWeixin', data, function (res) {
+    if (cb) {
+      cb(res)
+    }
+  });
+}
 
 module.exports = {
   HOST_URI: HOST_URI,
@@ -273,6 +293,8 @@ module.exports = {
   Login: Login,
   wxLogin: wxLogin,
   authGetSessionKey: authGetSessionKey,
+  StaffBindWeixin: StaffBindWeixin,
+  OwnerBindWeixin: OwnerBindWeixin,
   getUserInfo: getUserInfo,
   StaffGetUserInfo: StaffGetUserInfo,
   StaffGetCustomerList: StaffGetCustomerList,

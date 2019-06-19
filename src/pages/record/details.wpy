@@ -132,6 +132,11 @@ export default class Details extends wepy.page {
   StaffGetOrderInfo() {
         var that = this;
         Api.StaffGetOrderInfo(that.QueryData, function(res) {
+            if (res.errCode == '1001') {
+                wx.reLaunch({
+                    url: '../login'
+                })
+            }
             if (res.result) {
                 res.resultData.orderInfo.orderStatus = util.setStatus(res.resultData.orderInfo.orderStatus);
                 that.resultData = res.resultData;

@@ -162,6 +162,11 @@ export default class RecordSettle extends wepy.page {
       });
       Api.OwnerGetSettlementList(that.QueryData,function(res){
         Toast.clear();
+        if (res.errCode == '1001') {
+          wx.reLaunch({
+            url: '../login'
+          })
+        }
         if (res.result) {
           that.resultData.dataList = result.concat(res.resultData.dataList);
           that.hasNextPage = res.resultData.hasNextPage;

@@ -221,6 +221,11 @@ export default class RecordSale extends wepy.page {
       });
       Api.StaffGetOrderList(that.QueryData, function(res) {
         Toast.clear();
+        if (res.errCode == '1001') {
+          wx.reLaunch({
+            url: '../login'
+          });
+        }
         if (res.result) {
           res.resultData.dataList.map(item => {
             item.orderStatusText = util.setStatus(item.orderStatus);

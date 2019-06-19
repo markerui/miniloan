@@ -109,10 +109,31 @@ export default class Login extends wepy.page {
       this.login();
     },
     onWxLogin(){
-      Api.wxLogin();
+      this.wxLogin();
     }
   };
-
+  wxLogin(){
+    var that = this;
+    Toast.loading({
+      mask: true,
+      message: '登录中...'
+    });
+    Api.wxLogin(function(res){
+      Toast.clear();
+      if(res.result){
+        wx.setStorageSync('userType', res.resultData.typeID);
+        wx.setStorageSync('tokenId', res.resultData.tokenId);
+        wx.redirectTo({
+          url: 'index/index'
+        });
+      }else{
+        Dialog.alert({
+          title: '提示',
+          message: res.message
+        });
+      }
+    });
+  }
   login(){
     var that = this;
     Toast.loading({
