@@ -60,10 +60,10 @@
                         <view slot="title">
                             <van-card title="{{item.ProductName}}">
                                 <view slot="bottom" class="desc">
-                                    <text class="price">{{item.UnitPrice}}</text>
+                                    <text class="price">￥{{item.UnitPrice}}</text>
                                     <block wx:if="{{item.Packages == 0}}">
                                         <text>x {{item.Weight}}</text>
-                                        <text>斤</text>
+                                        <text>(斤)</text>
                                     </block>
                                     <block wx:if="{{item.Weight == 0}}">
                                         <text>x {{item.Packages}}</text>

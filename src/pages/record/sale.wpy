@@ -2,6 +2,12 @@
 .van-block__title {
   padding-top: 10px;
 }
+.list {
+  padding-bottom: 15px;
+  .van-button {
+    margin-left: 10px;
+  }
+}
 </style>
 
 <template>
@@ -28,7 +34,7 @@
     <scroll-view scroll-y style="height: {{windowHeight}}px;" bindscrolltolower="scrollLower">
       <block wx:if="{{resultData.dataList.length>0}}">
         <repeat for="{{resultData.dataList}}" key="index" index="index" item="item">
-          <view style="padding-top:10px" id="{{item.orderNum}}" @tap="onGoSaleDetails">
+          <view class="list" style="padding-top:10px" id="{{item.orderNum}}" @tap="onGoSaleDetails">
             <van-panel
               title="订单号{{item.orderNum}}"
               status="{{item.orderStatusText}}"
@@ -37,21 +43,26 @@
               <van-cell-group>
                 <van-cell title="订单标识" value="{{item.id}}"/>
                 <van-cell title="订单时间" value="{{item.createTime}}"/>
-                <van-cell title="订单金额" border="{{ false }}" value="￥{{item.totalPrice}}"/>
+                <van-cell
+                  custom-class="red"
+                  title="订单金额"
+                  border="{{ false }}"
+                  value="￥{{item.totalPrice}}"
+                />
               </van-cell-group>
               <block wx:if="{{item.orderStatus == 1}}">
                 <view slot="footer" style="text-align: right;">
                   <van-button
                     size="small"
                     data-status="0"
-                    data-order-num="{{item.orderNum}}"
+                    data-ordernum="{{item.orderNum}}"
                     @tap.stop="onSetOrderStatus"
                   >取消</van-button>
                   <van-button
                     size="small"
                     type="danger"
                     data-status="1"
-                    data-order-num="{{item.orderNum}}"
+                    data-ordernum="{{item.orderNum}}"
                     @tap.stop="onSetOrderStatus"
                   >收款</van-button>
                 </view>

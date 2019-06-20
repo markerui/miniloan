@@ -46,13 +46,13 @@
       bind:confirm="onConfirmDialog"
     >
       <view class="dialog-box">
-        <text class="van-block__title">当前操作</text>
+        <text class="van-block__title">商品信息</text>
         <van-cell-group>
           <van-field value="{{checkInfo.productName}}" label="商品" readonly/>
           <van-field value="{{checkInfo.ownerName}}" label="货主" readonly/>
           <van-field value="{{checkInfo.batchNum}}" label="批号" readonly/>
         </van-cell-group>
-        <text class="van-block__title">方式</text>
+        <text class="van-block__title">数量</text>
         <van-tabs type="card" active="{{ tabsActive }}" @change="onChangeTabs">
           <van-tab title="重量(斤)"></van-tab>
           <van-tab title="件"></van-tab>

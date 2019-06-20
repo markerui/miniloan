@@ -7,7 +7,7 @@
 <template>
   <view>
     <view class="top-box">
-      <van-search placeholder="请输入订单号或客户姓名" @search="onSearch"/>
+      <van-search placeholder="请输入商品名称" @search="onSearch"/>
       <view style="padding-bottom: 15px;">
         <text class="van-block__title">筛选时间</text>
         <van-tabs type="card" active="{{ tabsActive }}" @change="onChangeTabs">
@@ -24,10 +24,10 @@
           <view style="padding-top:10px" id="{{item.productID}}" @tap="onGoSaleDetails">
             <van-panel title="批号" status="{{item.batchNum}}">
               <van-cell-group>
-                <van-cell title="名称" value="{{item.productName}}"/>
+                <van-cell title="商品名称" value="{{item.productName}}"/>
                 <van-cell title="件数" value="{{item.totalPackages}}"/>
                 <van-cell title="重量" value="{{item.totalWeight}}"/>
-                <van-cell title="金额" value="￥{{item.totalPrice}}"/>
+                <van-cell custom-class="red" title="金额" value="￥{{item.totalPrice}}"/>
               </van-cell-group>
             </van-panel>
           </view>

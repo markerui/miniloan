@@ -22,11 +22,10 @@
         <block wx:if="{{resultData.dataList.length>0}}">
           <repeat for="{{resultData.dataList}}" key="index" index="index" item="item">
             <view style="padding-top:10px">
-                <van-panel title="支出金额" status="￥{{item.amount}}">
-                    <van-cell-group>
-                        <van-cell title="支出角色" value="{{item.etype}}"/>
-                    </van-cell-group>
-                </van-panel>
+                <van-cell-group>
+                    <van-cell  custom-class="red" title="支出金额" value="￥{{item.amount}}"/>
+                    <van-cell title="费用类型" value="{{item.etype}}"/>
+                </van-cell-group>
             </view>
           </repeat>
         </block>
@@ -100,10 +99,10 @@ export default class RecordSettle extends wepy.page {
     startDateShow: false,
     endDateShow: false,
     minDate: new Date().getTime(),
-    startDate: new Date().getTime(),
+    startDate: new Date().getTime() - 2592000000,
     endDate: new Date().getTime(),
     QueryData: {
-      startDate: util.formatTime(new Date().getTime()),
+      startDate: util.formatTime(new Date().getTime() - 2592000000),
       endDate: util.formatTime(new Date().getTime()),
       pageIndex: 1,
       pageSize: 10,

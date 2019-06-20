@@ -8,6 +8,11 @@ page {
   color: rgba(69, 90, 100, 0.6);
   padding: 20px 15px 10px;
 }
+.red {
+  .van-cell__value {
+    color: #f44;
+  }
+}
 </style>
 
 <script>

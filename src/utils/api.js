@@ -1,6 +1,6 @@
 import wepy from 'wepy';
 
-const HOST_URI = 'http://t1.qsfruit.com';
+const HOST_URI = 'https://t1.qsfruit.com:8080';
 const API_URL = HOST_URI + '/api/';
 var tokenId = '';
 
