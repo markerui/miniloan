@@ -62,7 +62,7 @@
                         <view slot="title">
                             <van-card title="{{item.productName}}" desc="商品批号{{item.batchNum}}">
                                 <view slot="bottom" class="desc">
-                                    <text class="price">{{item.unitPrice}}</text>
+                                    <text class="price">￥{{item.unitPrice}}</text>
                                     <text>x {{item.value}}</text>
                                     <text>({{item.unit}})</text>
                                 </view>

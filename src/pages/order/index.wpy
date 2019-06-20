@@ -236,12 +236,12 @@ export default class OrderIndex extends wepy.page {
         var that = this;
         that.userInfo.regionName = e.regionName;
         that.userInfo.name = e.name;
-        // wx.removeStorage({
-        //     key: 'clientInfo'
-        // });
-        // wx.removeStorage({
-        //     key: 'productList'
-        // });
+        wx.removeStorage({
+            key: 'clientInfo'
+        });
+        wx.removeStorage({
+            key: 'productList'
+        });
     }
 }
 </script>
