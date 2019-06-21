@@ -40,6 +40,7 @@
         }
     } 
 }
+
 </style>
 
 <template>
@@ -48,7 +49,14 @@
         <text class="van-block__title">基础信息</text>
         <van-cell-group>
             <van-cell title="部门" value="{{userInfo.regionName}}"/>
-            <van-cell title="客户" value="{{clientInfo.name}} {{clientInfo.tag}}" url="../client/index" is-link/>
+            <van-swipe-cell right-width="{{ 120 }}">
+                <van-cell-group>
+                    <van-cell title="客户" value="{{clientInfo.name}} {{clientInfo.tag}}" url="../client/index" is-link/>
+                </van-cell-group>
+                <view slot="right">
+                    <van-button type="danger" @tap="onDeleteClient">删除选择客户</van-button>
+                </view>
+            </van-swipe-cell>
             <van-cell title="商品" url="../goods/index" is-link/>
         </van-cell-group>
 
@@ -124,6 +132,7 @@ export default class OrderIndex extends wepy.page {
       "van-submit-bar": "../../components/vant/submit-bar/index",
       'van-toast': '../../components/vant/toast/index',
       'van-dialog': '../../components/vant/dialog/index',
+      "van-swipe-cell": "../../components/vant/swipe-cell/index"
     }
   };
 
@@ -155,6 +164,13 @@ export default class OrderIndex extends wepy.page {
   };
 
   methods = {
+      onDeleteClient(){
+          wx.removeStorage({
+            key: 'clientInfo'
+         });
+         this.QueryData.CustomerID = '';
+         this.clientInfo = [];
+      },
       onInput(e){
         var value = e.detail;
         var name = e.currentTarget.dataset.name;
@@ -175,7 +191,7 @@ export default class OrderIndex extends wepy.page {
         });
       },
       onSubmit(){
-        Dialog.alert({
+        Dialog.confirm({
             title: '提示',
             message: '确认无误提交信息吗?'
         }).then(() => {
@@ -195,12 +211,13 @@ export default class OrderIndex extends wepy.page {
                 })
             }
             if (res.result) {
+                var orderNum = res.resultData.orderNum;
                 Dialog.alert({
                     title: '提示',
                     message: res.message
                 }).then(() => {
-                    wx.navigateBack({
-                        delta: 1
+                    wx.redirectTo({
+                        url: '../record/details?orderNum=' + orderNum
                     });
                 });  
                 that.$apply();

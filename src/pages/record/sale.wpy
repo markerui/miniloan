@@ -41,7 +41,7 @@
               use-footer-slot
             >
               <van-cell-group>
-                <van-cell title="订单标识" value="{{item.id}}"/>
+                <van-cell custom-class="red" title="订单标识" value="{{item.id}}"/>
                 <van-cell title="订单时间" value="{{item.createTime}}"/>
                 <van-cell
                   custom-class="red"

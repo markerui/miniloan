@@ -225,6 +225,9 @@ export default class GoodsIndex extends wepy.page {
         key: 'productList',
         data: this.ProductList
       });
+      wx.navigateBack({
+        delta: 1
+      });
       this.$apply();
     },
     scrollLower() {
