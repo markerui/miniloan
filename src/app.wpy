@@ -6,7 +6,7 @@ page {
   display: block;
   font-size: 14px;
   color: rgba(69, 90, 100, 0.6);
-  padding: 20px 15px 10px;
+  padding: 10px 15px 5px;
 }
 .red {
   .van-cell__value {

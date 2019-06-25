@@ -95,6 +95,7 @@
                 type="textarea"
                 placeholder="备注信息"
                 autosize
+                clearable
                 border="{{ false }}"
                 data-name="Intro"  
                 @change="onInput" 
