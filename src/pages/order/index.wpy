@@ -158,7 +158,7 @@ export default class OrderIndex extends wepy.page {
         this.QueryData.ProductList.forEach(function(e) {
             totalPrice += e.UnitPrice* e.Packages + e.UnitPrice* e.Weight;
         });
-        this.QueryData.TotalPrice = totalPrice;
+        this.QueryData.TotalPrice = totalPrice.toFixed(2);
         return totalPrice;
       }
   };
