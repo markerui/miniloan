@@ -19,16 +19,18 @@
         }
 
         .desc{
-            color: #f44;
+             color: #666;
             text{
                 padding-right: 10px;
                 font-size: 12px;
+                &.red{
+                    color: #f44;
+                }
+                &.nopr{
+                    padding-right: 0;
+                }
                 &:first-child{
                     font-size: 14px;
-                }
-                &:last-child{
-                    color: #333;
-                    margin-left: -5px;
                 }
             }
         }
@@ -68,14 +70,16 @@
                         <view slot="title">
                             <van-card title="{{item.ProductName}}">
                                 <view slot="bottom" class="desc">
-                                    <text class="price">￥{{item.UnitPrice}}</text>
+                                    <text class="price red">￥{{item.UnitPrice}}</text>
                                     <block wx:if="{{item.Packages == 0}}">
-                                        <text>x {{item.Weight}}</text>
+                                        <text class="red nopr">x {{item.Weight}}</text>
                                         <text>(斤)</text>
+                                        <text>总计:<text class="red nopr">{{~~(item.Weight * item.UnitPrice)}}</text>元</text>
                                     </block>
                                     <block wx:if="{{item.Weight == 0}}">
-                                        <text>x {{item.Packages}}</text>
+                                        <text class="red nopr">x {{item.Packages}}</text>
                                         <text>(件)</text>
+                                        <text>总计:<text class="red nopr">{{~~(item.Packages * item.UnitPrice)}}</text>元</text>
                                     </block>
                                 </view>
                                 <view slot="footer" class="button">
