@@ -155,6 +155,7 @@ export default class GoodsIndex extends wepy.page {
     },
     ProductList: [],
     inputData: {
+      OType: 1,
       ProductID: 0,
       ProductName: '',
       Packages: '',
@@ -177,6 +178,7 @@ export default class GoodsIndex extends wepy.page {
       this.inputData.UnitPrice = '';
       this.inputData.Packages = '';
       this.inputData.Weight = '';
+      this.inputData.OType = event.detail.index + 1;
     },
     onSearch(e) {
       this.QueryData.keyword = e.detail;
