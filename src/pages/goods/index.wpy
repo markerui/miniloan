@@ -73,6 +73,7 @@
               value="{{inputData.Weight}}"
               placeholder="重量"
               label="重量"
+              type="number"
               data-name="Weight"
               @change="onInput"
             />

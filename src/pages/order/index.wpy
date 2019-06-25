@@ -61,7 +61,7 @@
         </van-cell-group>
 
         <text class="van-block__title">商品信息</text>
-        <van-panel custom-class="goods_list" title="商品总额" status="￥{{totalPrice}}">
+        <van-panel custom-class="goods_list" title="商品总额" status="￥{{~~totalPrice}}">
             <van-cell-group>
                 <repeat for="{{QueryData.ProductList}}" key="index" index="index" item="item">
                     <van-cell>
@@ -102,8 +102,9 @@
         </van-cell-group>
 
         <van-submit-bar
-            price="{{ totalPrice*100 }}"
+            price="{{ ~~totalPrice*100 }}"
             button-text="提交"
+            decimal-length="0"
             bind:submit="onSubmit"
             />
 
@@ -158,7 +159,7 @@ export default class OrderIndex extends wepy.page {
         this.QueryData.ProductList.forEach(function(e) {
             totalPrice += e.UnitPrice* e.Packages + e.UnitPrice* e.Weight;
         });
-        this.QueryData.TotalPrice = totalPrice.toFixed(2);
+        this.QueryData.TotalPrice = Math.trunc(totalPrice);
         return totalPrice;
       }
   };
