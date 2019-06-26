@@ -12,16 +12,18 @@
     }
 
     .desc {
-      color: #f44;
+      color: #666;
       text {
         padding-right: 10px;
         font-size: 12px;
+        &.red {
+          color: #f44;
+        }
+        &.nopr {
+          padding-right: 0;
+        }
         &:first-child {
           font-size: 14px;
-        }
-        &:last-child {
-          color: #333;
-          margin-left: -5px;
         }
       }
     }
@@ -46,9 +48,12 @@
               <view slot="title">
                 <van-card>
                   <view slot="bottom" class="desc">
-                    <text class="price">{{item.unitPrice}}</text>
-                    <text>x {{item.value}}</text>
-                    <text>({{item.unit}})</text>
+                    <text class="nopr">单价</text>
+                    <text class="red">￥{{item.unitPrice}}</text>
+                    <text class="nopr">重量</text>
+                    <text class="red">{{item.weight}}</text>
+                    <text class="nopr">件数</text>
+                    <text class="red">{{item.packages}}</text>
                   </view>
                 </van-card>
               </view>

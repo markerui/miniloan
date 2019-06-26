@@ -70,7 +70,13 @@
                         <view slot="title">
                             <van-card title="{{item.ProductName}}">
                                 <view slot="bottom" class="desc">
-                                    <text class="price red">￥{{item.UnitPrice}}</text>
+                                    <text class="nopr">单价</text>
+                                    <text class="red">￥{{~~(item.Weight * item.UnitPrice + item.Packages * item.UnitPrice)}}</text>
+                                    <text class="nopr">重量</text>
+                                    <text class="red">{{item.Weight}}</text>
+                                    <text class="nopr">件数</text>
+                                    <text class="red">{{item.Packages}}</text>
+                                    <!-- <text class="red">￥{{item.UnitPrice}}</text>
                                     <block wx:if="{{item.Packages == 0}}">
                                         <text class="red nopr">x {{item.Weight}}</text>
                                         <text>(斤)</text>
@@ -80,7 +86,7 @@
                                         <text class="red nopr">x {{item.Packages}}</text>
                                         <text>(件)</text>
                                         <text>总计:<text class="red nopr">{{~~(item.Packages * item.UnitPrice)}}</text>元</text>
-                                    </block>
+                                    </block> -->
                                 </view>
                                 <view slot="footer" class="button">
                                     <van-button size="mini" type="warning" id="{{index}}" plain @tap="onDelectPro">删除</van-button>

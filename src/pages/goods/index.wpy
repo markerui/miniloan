@@ -178,6 +178,7 @@ export default class GoodsIndex extends wepy.page {
       this.inputData.UnitPrice = '';
       this.inputData.Packages = '';
       this.inputData.Weight = '';
+      this.inputData.Intro = '';
       this.inputData.OType = event.detail.index + 1;
     },
     onSearch(e) {
@@ -202,10 +203,12 @@ export default class GoodsIndex extends wepy.page {
         this.inputData.UnitPrice = this.ProductList[
           ProductListindexOf
         ].UnitPrice;
+        this.inputData.Intro = this.ProductList[ProductListindexOf].Intro;
       } else {
         this.inputData.Packages = '';
         this.inputData.Weight = '';
         this.inputData.UnitPrice = '';
+        this.inputData.Intro = '';
       }
       this.checkInfo = this.resultData.dataList[index];
     },
