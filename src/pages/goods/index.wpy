@@ -93,13 +93,11 @@
           />
           <block wx:if="{{!tabsActive}}">
             <van-field
-              value="{{inputData.Intro}}"
-              placeholder="如:100件"
-              label="备注"
-              type="textarea"
-              autosize
+              value="{{inputData.Packages}}"
+              placeholder="件数"
+              label="件数"
               clearable
-              data-name="Intro"
+              data-name="Packages"
               @change="onInput"
             />
           </block>
@@ -160,8 +158,7 @@ export default class GoodsIndex extends wepy.page {
       ProductName: '',
       Packages: '',
       Weight: '',
-      UnitPrice: '',
-      Intro: ''
+      UnitPrice: ''
     }
   };
 
@@ -178,7 +175,6 @@ export default class GoodsIndex extends wepy.page {
       this.inputData.UnitPrice = '';
       this.inputData.Packages = '';
       this.inputData.Weight = '';
-      this.inputData.Intro = '';
       this.inputData.OType = event.detail.index + 1;
     },
     onSearch(e) {
@@ -203,12 +199,10 @@ export default class GoodsIndex extends wepy.page {
         this.inputData.UnitPrice = this.ProductList[
           ProductListindexOf
         ].UnitPrice;
-        this.inputData.Intro = this.ProductList[ProductListindexOf].Intro;
       } else {
         this.inputData.Packages = '';
         this.inputData.Weight = '';
         this.inputData.UnitPrice = '';
-        this.inputData.Intro = '';
       }
       this.checkInfo = this.resultData.dataList[index];
     },
