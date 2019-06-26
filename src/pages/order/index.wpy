@@ -72,23 +72,19 @@
                                 <view slot="bottom" class="desc">
                                     <text class="nopr">单价</text>
                                     <text class="red">￥{{item.UnitPrice}}</text>
-                                    <text class="nopr">重量</text>
-                                    <text class="red">{{item.Weight}}</text>
+                                    <block wx:if="{{item.OType == 1}}">
+                                        <text class="nopr">重量</text>
+                                        <text class="red">{{item.Weight}}</text>
+                                    </block>
                                     <text class="nopr">件数</text>
                                     <text class="red">{{item.Packages}}</text>
                                     <text class="nopr">总计</text>
-                                    <text class="red">￥{{~~(item.Weight * item.UnitPrice + item.Packages * item.UnitPrice)}}</text>
-                                    <!-- <text class="red">￥{{item.UnitPrice}}</text>
-                                    <block wx:if="{{item.Packages == 0}}">
-                                        <text class="red nopr">x {{item.Weight}}</text>
-                                        <text>(斤)</text>
-                                        <text>总计:<text class="red nopr">{{~~(item.Weight * item.UnitPrice)}}</text>元</text>
+                                    <block wx:if="{{item.OType == 1}}">
+                                        <text class="red">￥{{~~(item.Weight * item.UnitPrice)}}</text>
                                     </block>
-                                    <block wx:if="{{item.Weight == 0}}">
-                                        <text class="red nopr">x {{item.Packages}}</text>
-                                        <text>(件)</text>
-                                        <text>总计:<text class="red nopr">{{~~(item.Packages * item.UnitPrice)}}</text>元</text>
-                                    </block> -->
+                                    <block wx:else>
+                                        <text class="red">￥{{~~(item.Packages * item.UnitPrice)}}</text>
+                                    </block>
                                 </view>
                                 <view slot="footer" class="button">
                                     <van-button size="mini" type="warning" id="{{index}}" plain @tap="onDelectPro">删除</van-button>
@@ -170,7 +166,11 @@ export default class OrderIndex extends wepy.page {
       totalPrice(){
         var totalPrice = 0;
         this.QueryData.ProductList.forEach(function(e) {
-            totalPrice += e.UnitPrice* e.Packages + e.UnitPrice* e.Weight;
+            if(e.OType == 1){
+                totalPrice += e.UnitPrice* e.Weight;
+            }else{
+                totalPrice += e.UnitPrice* e.Packages;
+            }
         });
         this.QueryData.TotalPrice = Math.trunc(totalPrice);
         return totalPrice;
